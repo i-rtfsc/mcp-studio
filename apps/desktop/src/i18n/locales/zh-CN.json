@@ -1,0 +1,255 @@
+{
+  "app": {
+    "name": "MCP Studio",
+    "title": "MCP Studio",
+    "toggleTheme": "切换主题",
+    "notifications": "通知"
+  },
+  "workspace": {
+    "noServerSelected": {
+      "title": "未选择服务器",
+      "description": "请从左侧面板选择一个服务器开始。",
+      "tip": "如果您没有服务器，请点击 '+' 按钮添加一个。"
+    },
+    "serverDisconnected": {
+      "title": "服务器已断开",
+      "description": "所选服务器当前已断开连接。",
+      "tip": "您可以尝试重新连接或检查服务器状态。"
+    },
+    "commandInputPlaceholder": "输入 / 调用工具或开始输入...",
+    "deleteServerConfirm": "确定要删除此服务器吗？",
+    "toolCount_one": "{{count}} 个工具",
+    "toolCount_other": "{{count}} 个工具",
+    "connectToView": "连接以查看工具",
+    "inspector": {
+      "hide": "隐藏检查器",
+      "show": "显示检查器"
+    }
+  },
+  "mcp": {
+    "servers": {
+      "title": "MCP 服务器",
+      "loading": "加载中...",
+      "empty": {
+        "title": "暂无服务器",
+        "description": "添加一个 MCP 服务器开始调试"
+      },
+      "status": {
+        "connected": "已连接",
+        "disconnected": "未连接",
+        "connecting": "连接中",
+        "error": "错误"
+      },
+      "actions": {
+        "add": "添加服务器",
+        "edit": "编辑",
+        "connect": "连接",
+        "disconnect": "断开",
+        "delete": "删除",
+        "reconnect": "重新连接",
+        "reconnecting": "正在重新连接 {{name}}...",
+        "connectSuccess": "已连接到 {{name}}",
+        "connectError": "连接失败: {{message}}",
+        "disconnectSuccess": "已断开 {{name}}",
+        "disconnectError": "断开失败: {{message}}",
+        "reconnectSuccess": "已重新连接到 {{name}}",
+        "reconnectError": "重新连接失败: {{message}}",
+        "deleteSuccess": "服务器已删除",
+        "deleteError": "删除失败: {{message}}"
+      },
+      "dialog": {
+        "title": "添加 MCP 服务器",
+        "description": "输入 MCP 服务器的名称和 URL",
+        "editTitle": "编辑 MCP 服务器",
+        "editDescription": "修改服务器的配置信息"
+      },
+      "form": {
+        "name": "名称",
+        "namePlaceholder": "我的 MCP 服务器",
+        "type": "传输类型",
+        "typePlaceholder": "选择传输类型",
+        "url": "URL",
+        "urlPlaceholder": "http://localhost:8080/mcp",
+        "submit": "添加",
+        "update": "更新",
+        "submitting": "处理中...",
+        "success": "服务器添加成功",
+        "updateSuccess": "服务器更新成功",
+        "error": "操作失败: {{message}}",
+        "validation": {
+          "required": "请填写名称和 URL"
+        }
+      }
+    },
+    "playground": {
+      "toolNotFound": "未找到工具 '{{toolName}}'。",
+      "unknownCommand": "未知命令。",
+      "title": "MCP 调试面板",
+      "selectServer": "选择服务器",
+      "toolCall": "工具调用",
+      "selectTool": "选择工具",
+      "selectToolPlaceholder": "选择要调用的工具",
+      "inputParams": "输入参数 (JSON)",
+      "inputParamsPlaceholder": "{}",
+      "inputParamsHint": "JSON 格式参数，无参数工具可留空",
+      "call": "调用",
+      "calling": "调用中...",
+      "result": "结果",
+      "resultContent": "结果内容",
+      "history": "历史记录",
+      "rawResponse": "原始响应 (JSON)",
+      "success": "成功",
+      "failed": "失败",
+      "noResult": "调用工具后将在此显示结果",
+      "noHistory": "暂无调用历史",
+      "callSuccess": "调用成功，耗时 {{duration}}ms",
+      "callFailed": "调用失败: {{error}}",
+      "callError": "调用出错: {{message}}",
+      "invalidJson": "输入参数不是有效的 JSON",
+      "noServer": {
+        "title": "请先连接服务器",
+        "description": "前往 MCP 服务器页面连接一个服务器"
+      }
+    }
+  },
+  "tool": {
+    "historyRestored": "历史已恢复",
+    "definitionAndSchema": "工具定义与架构",
+    "copiedToClipboard": "已复制到剪贴板",
+    "callHistory": "调用历史",
+    "noHistoryForTool": "暂无此工具的历史记录",
+    "input": "输入",
+    "inputParams": "输入参数",
+    "form": "表单",
+    "json": "JSON",
+    "executing": "执行中...",
+    "execute": "执行工具",
+    "result": "执行结果",
+    "success": "成功",
+    "failed": "失败",
+    "noContentItems": "未返回内容项。",
+    "displayCard": "展示卡片 #{{index}}",
+    "fullResponse": "完整响应载荷",
+    "copy": "复制",
+    "readyToExecute": "准备执行",
+    "executeHint": "在左侧配置参数，点击执行以在此查看结果。",
+    "type": {
+      "text": "文本",
+      "image": "图片",
+      "data": "数据"
+    },
+    "list": {
+      "failedToFetchJson": "获取原始 JSON 失败: {{error}}",
+      "exportSuccess": "工具导出成功",
+      "exportError": "导出工具失败: {{error}}",
+      "noServerSelected": "未选择服务器",
+      "selectServerHint": "从左侧面板选择一个服务器以查看其工具。",
+      "searchPlaceholder": "搜索工具...",
+      "refresh": "刷新工具",
+      "viewRawJson": "查看原始 JSON",
+      "exportJson": "导出 JSON",
+      "noToolsFound": "未找到匹配的工具。",
+      "noDescription": "暂无描述",
+      "rawResponseTitle": "工具列表原始响应"
+    }
+  },
+  "http": {
+    "receiver": {
+      "title": "Webhook",
+      "serverControl": "服务器控制",
+      "serverControlDesc": "启动 HTTP 服务器接收 multipart/form-data 请求",
+      "running": "运行中",
+      "stopped": "已停止",
+      "port": "端口",
+      "start": "启动",
+      "stop": "停止",
+      "openStorage": "打开存储文件夹",
+      "endpoint": "接收端点",
+      "endpointHint": "发送 POST 请求到此端点",
+      "exampleRequest": "示例请求",
+      "messages": "接收的消息",
+      "messagesDesc": "显示最近接收的消息和文件",
+      "loading": "加载中...",
+      "noMessages": "暂无接收的消息",
+      "table": {
+        "requestId": "请求ID",
+        "fileName": "文件名",
+        "size": "大小",
+        "time": "时间"
+      },
+      "startSuccess": "服务器已启动，端口: {{port}}",
+      "startError": "启动失败: {{message}}",
+      "stopSuccess": "服务器已停止",
+      "stopError": "停止失败: {{message}}",
+      "deleteSuccess": "消息已删除",
+      "deleteError": "删除失败: {{message}}",
+      "copiedEndpoint": "已复制端点 URL",
+      "binaryContent": "二进制文件或无法读取的内容",
+      "fileSaved": "文件已保存（不预览内容）",
+      "pathCopied": "路径已复制",
+      "configRequired": "需要配置",
+      "network": "网络",
+      "networkEndpointCopied": "已复制网络端点",
+      "localhost": "本地主机",
+      "localhostEndpointCopied": "已复制本地端点",
+      "noContent": "无可用内容",
+      "recentActivity": "最近活动",
+      "history": "历史记录",
+      "viewAllHistory": "查看所有历史",
+      "sendPostHint": "发送 POST 请求到 Webhook URL 以在此显示。",
+      "listening": "监听中",
+      "idle": "空闲",
+      "messageHistory": "消息历史",
+      "historyDesc": "Agent 最近接收到的 Webhook 请求。",
+      "noHistory": "暂无历史记录",
+      "total": "总计",
+      "refresh": "刷新",
+      "unknownType": "未知",
+      "latest": "最新",
+      "requestPrefix": "请求 {{id}}",
+      "defaultFileName": "文件"
+    }
+  },
+  "inspector": {
+    "tabs": {
+      "logs": "日志",
+      "httpReceiver": "Webhook"
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "description": "配置应用偏好设置",
+    "appearance": "外观",
+    "advanced": "高级",
+    "appearanceDescription": "自定义应用程序的外观",
+    "themeMode": "主题模式",
+    "themeModeDesc": "选择您偏好的界面风格",
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统",
+    "languageTitle": "语言",
+    "languageDesc": "选择界面语言",
+    "advancedDescription": "系统连接和高级配置",
+    "heartbeatInterval": "心跳间隔",
+    "heartbeatIntervalDesc": "MCP 服务器连接心跳检测间隔时间（5-300秒）",
+    "heartbeatIntervalError": "心跳间隔必须在 5 到 300 秒之间",
+    "heartbeatIntervalSuccess": "心跳间隔已保存",
+    "heartbeatIntervalSaveError": "保存心跳间隔失败",
+    "seconds": "秒",
+    "applicationLogs": "应用日志",
+    "applicationLogsDesc": "查看本地日志文件以进行故障排查",
+    "openFolder": "打开文件夹",
+    "databaseHealth": "数据库健康",
+    "databaseHealthDesc": "验证 SQLite 连接状态",
+    "checkConnection": "检查连接",
+    "dangerZone": "危险区域",
+    "dangerZoneDesc": "不可逆操作",
+    "resetDatabase": "重置数据库",
+    "resetDatabaseDesc": "清除所有本地数据并重置应用状态",
+    "resetData": "重置数据",
+    "openFolderSuccess": "日志文件夹已打开",
+    "openFolderError": "无法打开日志文件夹",
+    "resetSuccess": "数据库已重置",
+    "resetError": "重置失败"
+  }
+}

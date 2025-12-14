@@ -1,0 +1,255 @@
+{
+  "app": {
+    "name": "MCP Studio",
+    "title": "MCP Studio",
+    "toggleTheme": "Toggle theme",
+    "notifications": "Notifications"
+  },
+  "workspace": {
+    "noServerSelected": {
+      "title": "No Server Selected",
+      "description": "Please select a server from the left panel to begin.",
+      "tip": "If you don't have any servers, click the '+' button to add one."
+    },
+    "serverDisconnected": {
+      "title": "Server Disconnected",
+      "description": "The selected server is currently disconnected.",
+      "tip": "You can try reconnecting or check the server status."
+    },
+    "commandInputPlaceholder": "Type / to call a tool or start typing...",
+    "deleteServerConfirm": "Are you sure you want to delete this server?",
+    "toolCount_one": "{{count}} tool",
+    "toolCount_other": "{{count}} tools",
+    "connectToView": "Connect to View Tools",
+    "inspector": {
+      "hide": "Hide Inspector",
+      "show": "Show Inspector"
+    }
+  },
+  "mcp": {
+    "servers": {
+      "title": "MCP Servers",
+      "loading": "Loading...",
+      "empty": {
+        "title": "No Servers",
+        "description": "Add an MCP server to start debugging"
+      },
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "connecting": "Connecting",
+        "error": "Error"
+      },
+      "actions": {
+        "add": "Add Server",
+        "edit": "Edit",
+        "connect": "Connect",
+        "disconnect": "Disconnect",
+        "delete": "Delete",
+        "reconnect": "Reconnect",
+        "reconnecting": "Reconnecting to {{name}}...",
+        "connectSuccess": "Connected to {{name}}",
+        "connectError": "Connection failed: {{message}}",
+        "disconnectSuccess": "Disconnected from {{name}}",
+        "disconnectError": "Disconnect failed: {{message}}",
+        "reconnectSuccess": "Reconnected to {{name}}",
+        "reconnectError": "Reconnect failed: {{message}}",
+        "deleteSuccess": "Server deleted",
+        "deleteError": "Delete failed: {{message}}"
+      },
+      "dialog": {
+        "title": "Add MCP Server",
+        "description": "Enter the name and URL of the MCP server",
+        "editTitle": "Edit MCP Server",
+        "editDescription": "Modify the server configuration"
+      },
+      "form": {
+        "name": "Name",
+        "namePlaceholder": "My MCP Server",
+        "type": "Transport Type",
+        "typePlaceholder": "Select transport type",
+        "url": "URL",
+        "urlPlaceholder": "http://localhost:8080/mcp",
+        "submit": "Add",
+        "update": "Update",
+        "submitting": "Processing...",
+        "success": "Server added successfully",
+        "updateSuccess": "Server updated successfully",
+        "error": "Operation failed: {{message}}",
+        "validation": {
+          "required": "Please fill in name and URL"
+        }
+      }
+    },
+    "playground": {
+      "toolNotFound": "Tool '{{toolName}}' not found.",
+      "unknownCommand": "Unknown command.",
+      "title": "MCP Playground",
+      "selectServer": "Select Server",
+      "toolCall": "Tool Call",
+      "selectTool": "Select Tool",
+      "selectToolPlaceholder": "Select a tool to call",
+      "inputParams": "Input Parameters (JSON)",
+      "inputParamsPlaceholder": "{}",
+      "inputParamsHint": "JSON format parameters, leave empty for tools without parameters",
+      "call": "Call",
+      "calling": "Calling...",
+      "result": "Result",
+      "resultContent": "Result Content",
+      "history": "History",
+      "rawResponse": "Raw Response (JSON)",
+      "success": "Success",
+      "failed": "Failed",
+      "noResult": "Results will appear here after calling a tool",
+      "noHistory": "No call history",
+      "callSuccess": "Call successful, took {{duration}}ms",
+      "callFailed": "Call failed: {{error}}",
+      "callError": "Call error: {{message}}",
+      "invalidJson": "Input parameters is not valid JSON",
+      "noServer": {
+        "title": "Please connect a server first",
+        "description": "Go to MCP Servers page to connect a server"
+      }
+    }
+  },
+  "tool": {
+    "historyRestored": "History restored",
+    "definitionAndSchema": "Tool Definition & Schema",
+    "copiedToClipboard": "Copied to clipboard",
+    "callHistory": "Call History",
+    "noHistoryForTool": "No history found for this tool",
+    "input": "Input",
+    "inputParams": "Input Parameters",
+    "form": "Form",
+    "json": "JSON",
+    "executing": "Executing...",
+    "execute": "Execute Tool",
+    "result": "Execution Result",
+    "success": "Success",
+    "failed": "Failed",
+    "noContentItems": "No content items returned.",
+    "displayCard": "DisplayCard #{{index}}",
+    "fullResponse": "Full Response Payload",
+    "copy": "Copy",
+    "readyToExecute": "Ready to Execute",
+    "executeHint": "Configure parameters on the left and click Execute to see results here.",
+    "type": {
+      "text": "Text",
+      "image": "Image",
+      "data": "Data"
+    },
+    "list": {
+      "failedToFetchJson": "Failed to fetch raw JSON: {{error}}",
+      "exportSuccess": "Tools exported successfully",
+      "exportError": "Failed to export tools: {{error}}",
+      "noServerSelected": "No Server Selected",
+      "selectServerHint": "Select a server from the left dock to view its tools.",
+      "searchPlaceholder": "Search tools...",
+      "refresh": "Refresh Tools",
+      "viewRawJson": "View Raw JSON",
+      "exportJson": "Export JSON",
+      "noToolsFound": "No tools found matching your search.",
+      "noDescription": "No description provided",
+      "rawResponseTitle": "Raw Tool List Response"
+    }
+  },
+  "http": {
+    "receiver": {
+      "title": "Webhook",
+      "serverControl": "Server Control",
+      "serverControlDesc": "Start HTTP server to receive multipart/form-data requests",
+      "running": "Running",
+      "stopped": "Stopped",
+      "port": "Port",
+      "start": "Start",
+      "stop": "Stop",
+      "openStorage": "Open Storage Folder",
+      "endpoint": "Receive Endpoint",
+      "endpointHint": "Send POST requests to this endpoint",
+      "exampleRequest": "Example Request",
+      "messages": "Received Messages",
+      "messagesDesc": "Shows recently received messages and files",
+      "loading": "Loading...",
+      "noMessages": "No messages received",
+      "table": {
+        "requestId": "Request ID",
+        "fileName": "File Name",
+        "size": "Size",
+        "time": "Time"
+      },
+      "startSuccess": "Server started on port: {{port}}",
+      "startError": "Start failed: {{message}}",
+      "stopSuccess": "Server stopped",
+      "stopError": "Stop failed: {{message}}",
+      "deleteSuccess": "Message deleted",
+      "deleteError": "Delete failed: {{message}}",
+      "copiedEndpoint": "Endpoint URL copied",
+      "binaryContent": "Binary file or unreadable content",
+      "fileSaved": "File saved (content not previewed)",
+      "pathCopied": "Path copied",
+      "configRequired": "Config Required",
+      "network": "Network",
+      "networkEndpointCopied": "Copied network endpoint",
+      "localhost": "Localhost",
+      "localhostEndpointCopied": "Copied localhost endpoint",
+      "noContent": "No content available",
+      "recentActivity": "Most Recent Activity",
+      "history": "History",
+      "viewAllHistory": "View All History",
+      "sendPostHint": "Send a POST request to the webhook URL to see it appear here.",
+      "listening": "Listening",
+      "idle": "Idle",
+      "messageHistory": "Message History",
+      "historyDesc": "Recent webhook requests received by the agent.",
+      "noHistory": "No history available",
+      "total": "Total",
+      "refresh": "Refresh",
+      "unknownType": "Unknown",
+      "latest": "LATEST",
+      "requestPrefix": "Request {{id}}",
+      "defaultFileName": "File"
+    }
+  },
+  "inspector": {
+    "tabs": {
+      "logs": "Logs",
+      "httpReceiver": "Webhook"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Configure your application preferences",
+    "appearance": "Appearance",
+    "advanced": "Advanced",
+    "appearanceDescription": "Customize the look and feel of the application",
+    "themeMode": "Theme Mode",
+    "themeModeDesc": "Select your preferred interface style",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "languageTitle": "Language",
+    "languageDesc": "Select interface language",
+    "advancedDescription": "System connection and advanced configuration",
+    "heartbeatInterval": "Heartbeat Interval",
+    "heartbeatIntervalDesc": "MCP server connection heartbeat detection interval (5-300 seconds)",
+    "heartbeatIntervalError": "Heartbeat interval must be between 5 and 300 seconds",
+    "heartbeatIntervalSuccess": "Heartbeat interval saved",
+    "heartbeatIntervalSaveError": "Failed to save heartbeat interval",
+    "seconds": "seconds",
+    "applicationLogs": "Application Logs",
+    "applicationLogsDesc": "View local log files for troubleshooting",
+    "openFolder": "Open Folder",
+    "databaseHealth": "Database Health",
+    "databaseHealthDesc": "Verify SQLite connection status",
+    "checkConnection": "Check Connection",
+    "dangerZone": "Danger Zone",
+    "dangerZoneDesc": "Irreversible actions",
+    "resetDatabase": "Reset Database",
+    "resetDatabaseDesc": "Clear all local data and reset app state",
+    "resetData": "Reset Data",
+    "openFolderSuccess": "Log folder opened",
+    "openFolderError": "Failed to open log folder",
+    "resetSuccess": "Database has been reset",
+    "resetError": "Reset failed"
+  }
+}

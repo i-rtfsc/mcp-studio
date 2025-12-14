@@ -1,0 +1,9 @@
+node_modules
+dist
+target
+build
+.next
+*.min.js
+*.min.css
+coverage
+.tauri

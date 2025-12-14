@@ -1,0 +1,161 @@
+# =============================================================================
+# Tauri + React monorepo ignore rules (generated 2025-12-10)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Node / JS tooling
+# -----------------------------------------------------------------------------
+node_modules/
+**/node_modules/
+.pnp*
+.pnpm-store/
+.npm/
+.yarn/
+
+# Build artefacts (React/Vite/Next/etc.)
+dist/
+dist-ssr/
+build/
+out/
+apps/**/dist/
+
+# HTTP webhook received files
+received_files/
+packages/**/dist/
+.vite/
+.vitest/
+.turbo/
+.next/
+.storybook-out/
+.svelte-kit/
+*.tsbuildinfo
+
+# Test & coverage
+coverage/
+.nyc_output/
+*.lcov
+**/coverage/
+playwright-report/
+test-results/
+
+# Lint / formatter caches
+.eslintcache
+.prettiercache
+
+# -----------------------------------------------------------------------------
+# Rust / Tauri
+# -----------------------------------------------------------------------------
+/target/
+**/src-tauri/target/
+**/src-tauri/gen/
+**/src-tauri/WixTools/
+**/src-tauri/.cache/
+**/src-tauri/logs/
+**/src-tauri/*.log
+**/*.rs.bk
+
+# -----------------------------------------------------------------------------
+# Application data (DB, logs, temp)
+# -----------------------------------------------------------------------------
+*.db
+*.db-shm
+*.db-wal
+*.sqlite*
+logs/
+*.log
+*.log.*
+app-data/
+user-data/
+tmp/
+temp/
+*.tmp
+
+# -----------------------------------------------------------------------------
+# Environment / secrets
+# -----------------------------------------------------------------------------
+.env
+.env.*
+*.local
+*.secret
+secrets.*
+*.pem
+*.key
+*.crt
+*.cer
+*.pfx
+*.p12
+
+# -----------------------------------------------------------------------------
+# OS / tooling noise
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+*.code-workspace
+*.swp
+*.swo
+*.swn
+.viminfo
+# emacs
+*~
+\#*#
+
+# -----------------------------------------------------------------------------
+# Archives / installers / bundles
+# -----------------------------------------------------------------------------
+*.dmg
+*.pkg
+*.app
+*.exe
+*.msi
+*.apk
+*.AppImage
+*.deb
+*.rpm
+*.zip
+*.tar
+generic_bundle/
+
+# -----------------------------------------------------------------------------
+# Misc
+# -----------------------------------------------------------------------------
+*.bak
+*.backup
+*.orig
+*.rej
+*.patch
+.idb
+*.pid
+*.lock
+*.sock
+# 临时文件
+temp/
+tmp/
+*.tmp
+*.temp
+scratch/
+sandbox/
+
+# -----------------------------------------------------------------------------
+# AI Agents / Tools
+# -----------------------------------------------------------------------------
+.claude/
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+.cursor/
+.copilot/
+.aider/
+.playwright-mcp
+.openspec/
+openspec/
+.specify/
+specs/
