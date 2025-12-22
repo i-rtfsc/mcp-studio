@@ -384,7 +384,7 @@ impl McpClientManager {
 
                 // Convert tool to Value to capture extra fields like annotations and _meta
                 let mut tool_value = serde_json::to_value(&t).unwrap_or(serde_json::Value::Null);
-                
+
                 // Remove known fields
                 if let Some(obj) = tool_value.as_object_mut() {
                     obj.remove("name");
@@ -392,8 +392,9 @@ impl McpClientManager {
                     obj.remove("inputSchema");
                     obj.remove("outputSchema");
                 }
-                
-                let extra = if tool_value.is_object() && !tool_value.as_object().unwrap().is_empty() {
+
+                let extra = if tool_value.is_object() && !tool_value.as_object().unwrap().is_empty()
+                {
                     serde_json::to_string(&tool_value).ok()
                 } else {
                     None

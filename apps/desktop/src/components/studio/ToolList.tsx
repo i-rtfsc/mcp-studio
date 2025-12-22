@@ -218,7 +218,9 @@ export function ToolList() {
                                   </Badge>
                                 ));
                               }
-                            } catch {}
+                            } catch {
+                              // Ignore JSON parse errors for extra agents
+                            }
                             return null;
                           })()}
                         </div>

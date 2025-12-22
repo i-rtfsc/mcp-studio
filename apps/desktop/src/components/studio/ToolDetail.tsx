@@ -308,13 +308,17 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
       if (tool.output_schema) {
         try {
           definition.outputSchema = JSON.parse(tool.output_schema);
-        } catch {}
+        } catch {
+          // Ignore JSON parse errors for output schema
+        }
       }
 
       if (tool.extra) {
         try {
           Object.assign(definition, JSON.parse(tool.extra));
-        } catch {}
+        } catch {
+          // Ignore JSON parse errors for extra fields
+        }
       }
       
       return JSON.stringify(definition, null, 2);
