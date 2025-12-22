@@ -7,38 +7,24 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  ArrowLeft,
-  Play,
-  Code,
-  Clock,
-  Wrench,
-  FileJson,
-  Copy,
-  Info,
-  History
-} from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { ArrowLeft, Play, Code, Clock, Wrench, FileJson, Copy, Info, History } from 'lucide-react';
 import { toast } from 'sonner';
-import { useMcpTools, useMcpCallHistory, type McpTool, type McpToolCallResult, type McpCallHistory } from '@/hooks/useMcpTools';
+import {
+  useMcpTools,
+  useMcpCallHistory,
+  type McpTool,
+  type McpToolCallResult,
+  type McpCallHistory,
+} from '@/hooks/useMcpTools';
 import { useAppStore } from '@/lib/store';
 import { SchemaForm } from './SchemaForm';
 
@@ -57,7 +43,7 @@ const truncateBase64InObject = (obj: any): any => {
   }
 
   const newObj = { ...obj };
-  
+
   // Check if this object looks like an image content block
   if (newObj.type === 'image' && typeof newObj.data === 'string' && newObj.data.length > 100) {
     newObj.data = `... (${Math.round(newObj.data.length / 1024)} KB base64 data) ...`;
@@ -69,7 +55,7 @@ const truncateBase64InObject = (obj: any): any => {
       }
     }
   }
-  
+
   return newObj;
 };
 
@@ -93,9 +79,7 @@ const DisplayCard = ({ title, typeLabel, children }: DisplayCardProps) => (
         )}
       </div>
     </CardHeader>
-    <CardContent className="p-4 min-w-0">
-      {children}
-    </CardContent>
+    <CardContent className="p-4 min-w-0">{children}</CardContent>
   </Card>
 );
 
@@ -103,7 +87,11 @@ const resolveImageSource = (content: any): string => {
   if (!content?.data || typeof content.data !== 'string') {
     return '';
   }
-  if (content.data.startsWith('http://') || content.data.startsWith('https://') || content.data.startsWith('data:')) {
+  if (
+    content.data.startsWith('http://') ||
+    content.data.startsWith('https://') ||
+    content.data.startsWith('data:')
+  ) {
     return content.data;
   }
   if (content.mimeType) {
@@ -161,7 +149,7 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
 
   const toolHistory = React.useMemo(() => {
     if (!fullHistory) return [];
-    return fullHistory.filter(h => h.tool_name === tool.name);
+    return fullHistory.filter((h) => h.tool_name === tool.name);
   }, [fullHistory, tool.name]);
 
   const restoreHistory = (item: McpCallHistory) => {
@@ -173,7 +161,7 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
         setInputParams(item.input_params);
       }
     }
-    
+
     setResult({
       success: item.status === 'success',
       raw_response: item.output_result || '',
@@ -182,7 +170,7 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
       duration_ms: item.duration_ms || 0,
       created_at: item.created_at,
     });
-    
+
     toast.info(t('tool.historyRestored'));
   };
 
@@ -235,7 +223,7 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
         setInputParams('{}');
       }
     } else {
-       setInputParams('{}');
+      setInputParams('{}');
     }
     setResult(null);
   }, [tool, activeServerId]);
@@ -284,7 +272,7 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
   // Helper to generate the display JSON for the raw response tab
   const getDisplayResponseJson = () => {
     if (!result) return '';
-    
+
     // Try to parse the raw response first
     try {
       const parsed = JSON.parse(result.raw_response);
@@ -304,7 +292,7 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
         description: tool.description,
         inputSchema: tool.input_schema ? JSON.parse(tool.input_schema) : {},
       };
-      
+
       if (tool.output_schema) {
         try {
           definition.outputSchema = JSON.parse(tool.output_schema);
@@ -320,7 +308,7 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
           // Ignore JSON parse errors for extra fields
         }
       }
-      
+
       return JSON.stringify(definition, null, 2);
     } catch {
       return JSON.stringify(tool, null, 2);
@@ -345,10 +333,14 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
                 <p className="text-xs text-muted-foreground line-clamp-1">{tool.description}</p>
               )}
             </div>
-            
+
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="ghost" size="icon-sm" className="text-muted-foreground hover:text-foreground">
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   <Info className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
@@ -360,17 +352,17 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
                   </DialogTitle>
                 </DialogHeader>
                 <div className="flex-1 overflow-hidden relative border rounded-md bg-muted/50 mt-2">
-                   <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="absolute right-2 top-2 z-10 hover:bg-background/80"
-                      onClick={() => {
-                        navigator.clipboard.writeText(getDisplayDefinition());
-                        toast.success(t('tool.copiedToClipboard'));
-                      }}
-                    >
-                      <Copy className="h-3.5 w-3.5" />
-                    </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="absolute right-2 top-2 z-10 hover:bg-background/80"
+                    onClick={() => {
+                      navigator.clipboard.writeText(getDisplayDefinition());
+                      toast.success(t('tool.copiedToClipboard'));
+                    }}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </Button>
                   <ScrollArea className="h-[60vh]">
                     <div className="p-4 font-mono text-xs">
                       <pre className="whitespace-pre-wrap">{getDisplayDefinition()}</pre>
@@ -382,7 +374,11 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
 
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon-sm" className="text-muted-foreground hover:text-foreground">
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   <History className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
@@ -411,12 +407,12 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
                               {new Date(item.created_at + 'Z').toLocaleString()}
                             </span>
                           </div>
-                          
+
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                             <div className="flex items-center gap-1">
-                               <Clock className="h-3 w-3" />
-                               {item.duration_ms}ms
-                             </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {item.duration_ms}ms
+                            </div>
                           </div>
 
                           <div className="space-y-1">
@@ -438,12 +434,15 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
 
       <div className="flex-1 overflow-hidden min-w-0">
         <ResizablePanelGroup direction="horizontal" className="flex-1 min-w-0">
-          
           {/* Left Panel: Input */}
-          <ResizablePanel defaultSize={40} minSize={30} maxSize={70} className="flex flex-col bg-background/30 min-w-0">
+          <ResizablePanel
+            defaultSize={40}
+            minSize={30}
+            maxSize={70}
+            className="flex flex-col bg-background/30 min-w-0"
+          >
             <ScrollArea className="flex-1">
               <div className="p-6 space-y-6">
-                
                 {/* Input Header & Tabs */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -451,10 +450,18 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
                       <Code className="h-4 w-4 text-primary" />
                       {t('tool.inputParams')}
                     </h3>
-                    <Tabs value={paramMode} onValueChange={(v) => setParamMode(v as 'form' | 'json')} className="w-auto">
+                    <Tabs
+                      value={paramMode}
+                      onValueChange={(v) => setParamMode(v as 'form' | 'json')}
+                      className="w-auto"
+                    >
                       <TabsList className="h-7 bg-muted/50">
-                        <TabsTrigger value="form" className="h-5 text-xs">{t('tool.form')}</TabsTrigger>
-                        <TabsTrigger value="json" className="h-5 text-xs">JSON</TabsTrigger>
+                        <TabsTrigger value="form" className="h-5 text-xs">
+                          {t('tool.form')}
+                        </TabsTrigger>
+                        <TabsTrigger value="json" className="h-5 text-xs">
+                          JSON
+                        </TabsTrigger>
                       </TabsList>
                     </Tabs>
                   </div>
@@ -462,10 +469,10 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
                   <div className="min-h-[200px]">
                     {paramMode === 'form' ? (
                       <div className="border rounded-lg p-4 bg-card/50 shadow-sm">
-                        <SchemaForm 
-                          schema={tool.input_schema} 
-                          value={inputParams} 
-                          onChange={setInputParams} 
+                        <SchemaForm
+                          schema={tool.input_schema}
+                          value={inputParams}
+                          onChange={setInputParams}
                         />
                       </div>
                     ) : (
@@ -478,10 +485,9 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
                     )}
                   </div>
                 </div>
-
               </div>
             </ScrollArea>
-            
+
             {/* Execute Button Footer */}
             <div className="p-4 border-t border-border/40 bg-card/30 backdrop-blur-sm">
               <Button
@@ -491,7 +497,9 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
                 onClick={handleCall}
                 disabled={callTool.isPending}
               >
-                <Play className={cn("h-5 w-5 fill-current", callTool.isPending && "animate-spin")} />
+                <Play
+                  className={cn('h-5 w-5 fill-current', callTool.isPending && 'animate-spin')}
+                />
                 {callTool.isPending ? t('tool.executing') : t('tool.execute')}
               </Button>
             </div>
@@ -508,7 +516,7 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
               </h3>
               {result && (
                 <div className="flex items-center gap-2">
-                  <Badge variant={result.success ? "default" : "destructive"} className="h-5">
+                  <Badge variant={result.success ? 'default' : 'destructive'} className="h-5">
                     {result.success ? t('tool.success') : t('tool.failed')}
                   </Badge>
                   <Badge variant="outline" className="h-5 gap-1 text-[11px]">
@@ -516,8 +524,13 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
                     {result.duration_ms}ms
                   </Badge>
                   {result.created_at && (
-                    <Badge variant="outline" className="h-5 gap-1 text-[11px] text-muted-foreground">
-                      {new Date(result.created_at + (result.created_at.endsWith('Z') ? '' : 'Z')).toLocaleString()}
+                    <Badge
+                      variant="outline"
+                      className="h-5 gap-1 text-[11px] text-muted-foreground"
+                    >
+                      {new Date(
+                        result.created_at + (result.created_at.endsWith('Z') ? '' : 'Z')
+                      ).toLocaleString()}
                     </Badge>
                   )}
                 </div>
@@ -530,79 +543,79 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
                   <>
                     {/* Content Display */}
                     <div className="space-y-4 w-full min-w-0">
-                       {(() => {
-                          const contentItems = extractContentItems(result);
-                          if (contentItems.length === 0) {
-                            return (
-                               <div className="text-sm text-muted-foreground italic pl-1">
-                                 {t('tool.noContentItems')}
-                               </div>
-                            );
-                          }
+                      {(() => {
+                        const contentItems = extractContentItems(result);
+                        if (contentItems.length === 0) {
+                          return (
+                            <div className="text-sm text-muted-foreground italic pl-1">
+                              {t('tool.noContentItems')}
+                            </div>
+                          );
+                        }
 
-                          return contentItems.map((item: any, index: number) => {
-                            const title = t('tool.displayCard', { index: index + 1 });
+                        return contentItems.map((item: any, index: number) => {
+                          const title = t('tool.displayCard', { index: index + 1 });
 
-                            if (item?.type === 'text' && typeof item.text === 'string') {
-                              return (
-                                <DisplayCard
-                                  key={`display-text-${index}`}
-                                  title={title}
-                                  typeLabel={t('tool.type.text')}
-                                >
-                                  <div className="bg-card/60 rounded-md border border-border/50 w-full overflow-x-auto">
-                                      <pre className="p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words break-all text-foreground/90">
-                                      {item.text}
-                                    </pre>
-                                  </div>
-                                </DisplayCard>
-                              );
-                            }
-
-                            if (item?.type === 'image' && typeof item.data === 'string') {
-                              const src = resolveImageSource(item);
-                              if (!src) return null;
-
-                              return (
-                                <DisplayCard
-                                  key={`display-image-${index}`}
-                                  title={title}
-                                  typeLabel={t('tool.type.image')}
-                                >
-                                  <div className="flex flex-col items-center gap-2">
-                                    <div className="border rounded-lg p-2 bg-muted/30 inline-block max-w-full">
-                                      <img
-                                        src={src}
-                                        alt={`Tool result ${index + 1}`}
-                                        className="max-w-full h-auto rounded shadow-sm"
-                                        style={{ maxHeight: '500px' }}
-                                      />
-                                    </div>
-                                    {item.mimeType && (
-                                      <span className="text-[10px] text-muted-foreground">
-                                        {item.mimeType}
-                                      </span>
-                                    )}
-                                  </div>
-                                </DisplayCard>
-                              );
-                            }
-
+                          if (item?.type === 'text' && typeof item.text === 'string') {
                             return (
                               <DisplayCard
-                                key={`display-raw-${index}`}
+                                key={`display-text-${index}`}
                                 title={title}
-                                typeLabel={item?.type || t('tool.type.data')}
+                                typeLabel={t('tool.type.text')}
                               >
                                 <div className="bg-card/60 rounded-md border border-border/50 w-full overflow-x-auto">
                                   <pre className="p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words break-all text-foreground/90">
-                                    {JSON.stringify(item, null, 2)}
+                                    {item.text}
                                   </pre>
                                 </div>
                               </DisplayCard>
                             );
-                          });
-                        })()}
+                          }
+
+                          if (item?.type === 'image' && typeof item.data === 'string') {
+                            const src = resolveImageSource(item);
+                            if (!src) return null;
+
+                            return (
+                              <DisplayCard
+                                key={`display-image-${index}`}
+                                title={title}
+                                typeLabel={t('tool.type.image')}
+                              >
+                                <div className="flex flex-col items-center gap-2">
+                                  <div className="border rounded-lg p-2 bg-muted/30 inline-block max-w-full">
+                                    <img
+                                      src={src}
+                                      alt={`Tool result ${index + 1}`}
+                                      className="max-w-full h-auto rounded shadow-sm"
+                                      style={{ maxHeight: '500px' }}
+                                    />
+                                  </div>
+                                  {item.mimeType && (
+                                    <span className="text-[10px] text-muted-foreground">
+                                      {item.mimeType}
+                                    </span>
+                                  )}
+                                </div>
+                              </DisplayCard>
+                            );
+                          }
+
+                          return (
+                            <DisplayCard
+                              key={`display-raw-${index}`}
+                              title={title}
+                              typeLabel={item?.type || t('tool.type.data')}
+                            >
+                              <div className="bg-card/60 rounded-md border border-border/50 w-full overflow-x-auto">
+                                <pre className="p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words break-all text-foreground/90">
+                                  {JSON.stringify(item, null, 2)}
+                                </pre>
+                              </div>
+                            </DisplayCard>
+                          );
+                        });
+                      })()}
                     </div>
 
                     {/* Raw Response JSON */}

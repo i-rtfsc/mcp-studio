@@ -3,9 +3,8 @@
 
 export type AppEvent =
   | { event: 'config:changed'; payload: { key: string; value: string } }
-  | { event: 'mcp:connection_lost'; payload: McpConnectionLostPayload }
-  // | { event: 'download:progress'; payload: { id: string; progress: number } }
-;
+  | { event: 'mcp:connection_lost'; payload: McpConnectionLostPayload };
+// | { event: 'download:progress'; payload: { id: string; progress: number } }
 
 export type EventName = AppEvent['event'];
 

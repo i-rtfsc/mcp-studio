@@ -51,8 +51,8 @@ export class ErrorBoundary extends Component<Props, State> {
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Something went wrong</AlertTitle>
               <AlertDescription>
-                An unexpected error occurred. Please try reloading the page or contact support if the
-                problem persists.
+                An unexpected error occurred. Please try reloading the page or contact support if
+                the problem persists.
               </AlertDescription>
             </Alert>
 

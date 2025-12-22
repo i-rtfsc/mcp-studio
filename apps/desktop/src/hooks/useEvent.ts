@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger';
 /**
  * A type-safe hook to listen to Tauri events.
  * Automatically handles unlistening on cleanup.
- * 
+ *
  * @param event The event name (e.g., 'config:changed')
  * @param handler The callback function
  */

@@ -19,7 +19,11 @@ export function useHttpReceiver() {
   const queryClient = useQueryClient();
 
   // Check server status
-  const { data: status, isLoading: isStatusLoading, refetch: checkStatus } = useQuery({
+  const {
+    data: status,
+    isLoading: isStatusLoading,
+    refetch: checkStatus,
+  } = useQuery({
     queryKey: ['http-server-status'],
     queryFn: async () => {
       const running = await invoke<boolean>('is_http_server_running');
@@ -34,7 +38,12 @@ export function useHttpReceiver() {
   const localIp = status?.localIp ?? null;
 
   // List received messages
-  const { data: messages, isLoading: isMessagesLoading, error, refetch: refetchMessages } = useQuery({
+  const {
+    data: messages,
+    isLoading: isMessagesLoading,
+    error,
+    refetch: refetchMessages,
+  } = useQuery({
     queryKey: ['http-received-messages'],
     queryFn: async () => {
       return await invoke<HttpReceivedMessage[]>('list_http_received_messages', {

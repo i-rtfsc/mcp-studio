@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import { Label } from "./label";
-import { cn } from "@/lib/utils";
+import { ReactNode } from 'react';
+import { Label } from './label';
+import { cn } from '@/lib/utils';
 
 interface FormFieldProps {
   label?: string;
@@ -11,16 +11,9 @@ interface FormFieldProps {
   className?: string;
 }
 
-export function FormField({
-  label,
-  error,
-  hint,
-  required,
-  children,
-  className,
-}: FormFieldProps) {
+export function FormField({ label, error, hint, required, children, className }: FormFieldProps) {
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn('space-y-2', className)}>
       {label && (
         <Label className="text-sm font-medium">
           {label}
@@ -28,12 +21,8 @@ export function FormField({
         </Label>
       )}
       {children}
-      {hint && !error && (
-        <p className="text-xs text-muted-foreground">{hint}</p>
-      )}
-      {error && (
-        <p className="text-xs text-red-500 dark:text-red-400">{error}</p>
-      )}
+      {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {error && <p className="text-xs text-red-500 dark:text-red-400">{error}</p>}
     </div>
   );
 }
@@ -45,22 +34,13 @@ interface FormSectionProps {
   className?: string;
 }
 
-export function FormSection({
-  title,
-  description,
-  children,
-  className,
-}: FormSectionProps) {
+export function FormSection({ title, description, children, className }: FormSectionProps) {
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn('space-y-4', className)}>
       {(title || description) && (
         <div className="space-y-1">
-          {title && (
-            <h3 className="text-base font-semibold text-foreground">{title}</h3>
-          )}
-          {description && (
-            <p className="text-sm text-muted-foreground">{description}</p>
-          )}
+          {title && <h3 className="text-base font-semibold text-foreground">{title}</h3>}
+          {description && <p className="text-sm text-muted-foreground">{description}</p>}
         </div>
       )}
       <div className="space-y-4">{children}</div>
@@ -76,10 +56,7 @@ interface FormActionsProps {
 export function FormActions({ children, className }: FormActionsProps) {
   return (
     <div
-      className={cn(
-        "flex items-center justify-end gap-2 pt-4 border-t border-border",
-        className
-      )}
+      className={cn('flex items-center justify-end gap-2 pt-4 border-t border-border', className)}
     >
       {children}
     </div>

@@ -14,13 +14,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    
+
     const applyTheme = (theme: Theme) => {
       root.classList.remove('light', 'dark');
 
       if (theme === 'system') {
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-          .matches
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
           ? 'dark'
           : 'light';
         root.classList.add(systemTheme);
@@ -34,7 +33,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Listen for system theme changes when theme is 'system'
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      
+
       const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
         root.classList.remove('light', 'dark');
         root.classList.add(e.matches ? 'dark' : 'light');
@@ -44,7 +43,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       if (mediaQuery.addEventListener) {
         mediaQuery.addEventListener('change', handleChange);
         return () => mediaQuery.removeEventListener('change', handleChange);
-      } 
+      }
       // Fallback for older browsers
       else if (mediaQuery.addListener) {
         mediaQuery.addListener(handleChange);
@@ -53,11 +52,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [theme]);
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {

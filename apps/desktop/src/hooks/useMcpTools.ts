@@ -7,20 +7,20 @@ export interface McpTool {
   server_id: string;
   name: string;
   description: string | null;
-  input_schema: string | null;  // JSON string
+  input_schema: string | null; // JSON string
   output_schema: string | null; // JSON string
-  extra: string | null;         // JSON string (annotations, _meta, etc.)
+  extra: string | null; // JSON string (annotations, _meta, etc.)
   created_at: string;
 }
 
 export interface McpToolsListResult {
   tools: McpTool[];
-  raw_response: string;  // Raw JSON for debugging
+  raw_response: string; // Raw JSON for debugging
 }
 
 export interface McpToolCallResult {
   success: boolean;
-  raw_response: string;  // Raw JSON for debugging
+  raw_response: string; // Raw JSON for debugging
   result: unknown | null;
   error: string | null;
   duration_ms: number;
@@ -42,7 +42,12 @@ export function useMcpTools(serverId: string | null) {
   const queryClient = useQueryClient();
 
   // Get cached tools from database
-  const { data: tools, isLoading, error, refetch } = useQuery({
+  const {
+    data: tools,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['mcp-tools', serverId],
     queryFn: async () => {
       if (!serverId) return [];
@@ -63,7 +68,11 @@ export function useMcpTools(serverId: string | null) {
 
   // Call a tool
   const callTool = useMutation({
-    mutationFn: async ({ serverId, toolName, params }: {
+    mutationFn: async ({
+      serverId,
+      toolName,
+      params,
+    }: {
       serverId: string;
       toolName: string;
       params?: Record<string, unknown>;
@@ -96,7 +105,12 @@ export function useMcpTools(serverId: string | null) {
 }
 
 export function useMcpCallHistory(serverId?: string, limit?: number) {
-  const { data: history, isLoading, error, refetch } = useQuery({
+  const {
+    data: history,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['mcp-call-history', serverId, limit],
     queryFn: async () => {
       return await invoke<McpCallHistory[]>('get_mcp_call_history', {

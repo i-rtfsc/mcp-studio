@@ -33,7 +33,12 @@ export interface UpdateMcpServerCmd {
 export function useMcpServers() {
   const queryClient = useQueryClient();
 
-  const { data: servers, isLoading, error, refetch } = useQuery({
+  const {
+    data: servers,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['mcp-servers'],
     queryFn: async () => {
       return await invoke<McpServer[]>('list_mcp_servers');
@@ -61,8 +66,8 @@ export function useMcpServers() {
                       status: (status as McpServer['status']) || 'disconnected',
                       last_error: errorMsg,
                     }
-                  : server,
-              ) || current,
+                  : server
+              ) || current
           );
 
           // Update database status
@@ -138,10 +143,13 @@ export function useMcpServers() {
   });
 
   // Reconnect a disconnected server
-  const reconnectServer = useCallback(async (id: string) => {
-    logger.info('Attempting to reconnect server', { fields: { server_id: id } });
-    return connectServer.mutateAsync(id);
-  }, [connectServer]);
+  const reconnectServer = useCallback(
+    async (id: string) => {
+      logger.info('Attempting to reconnect server', { fields: { server_id: id } });
+      return connectServer.mutateAsync(id);
+    },
+    [connectServer]
+  );
 
   return {
     servers,

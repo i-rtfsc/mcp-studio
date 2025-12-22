@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,9 +6,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "./dialog";
-import { Button } from "./button";
-import { cn } from "@/lib/utils";
+} from './dialog';
+import { Button } from './button';
+import { cn } from '@/lib/utils';
 
 interface ModalProps {
   open: boolean;
@@ -17,15 +17,15 @@ interface ModalProps {
   description?: string;
   children: ReactNode;
   footer?: ReactNode;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
 }
 
 const sizeClasses = {
-  sm: "max-w-sm",
-  md: "max-w-md",
-  lg: "max-w-lg",
-  xl: "max-w-xl",
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-lg',
+  xl: 'max-w-xl',
 };
 
 export function Modal({
@@ -35,7 +35,7 @@ export function Modal({
   description,
   children,
   footer,
-  size = "md",
+  size = 'md',
   className,
 }: ModalProps) {
   return (
@@ -43,8 +43,8 @@ export function Modal({
       <DialogContent
         className={cn(
           sizeClasses[size],
-          "rounded-2xl shadow-2xl backdrop-blur-xl",
-          "bg-white/95 dark:bg-gray-900/95",
+          'rounded-2xl shadow-2xl backdrop-blur-xl',
+          'bg-white/95 dark:bg-gray-900/95',
           className
         )}
       >
@@ -68,7 +68,7 @@ interface ConfirmModalProps {
   onCancel?: () => void;
   confirmText?: string;
   cancelText?: string;
-  variant?: "default" | "destructive";
+  variant?: 'default' | 'destructive';
   loading?: boolean;
 }
 
@@ -79,9 +79,9 @@ export function ConfirmModal({
   description,
   onConfirm,
   onCancel,
-  confirmText = "确认",
-  cancelText = "取消",
-  variant = "default",
+  confirmText = '确认',
+  cancelText = '取消',
+  variant = 'default',
   loading = false,
 }: ConfirmModalProps) {
   const handleCancel = () => {
@@ -116,7 +116,7 @@ export function ConfirmModal({
             disabled={loading}
             className="rounded-full"
           >
-            {loading ? "处理中..." : confirmText}
+            {loading ? '处理中...' : confirmText}
           </Button>
         </>
       }

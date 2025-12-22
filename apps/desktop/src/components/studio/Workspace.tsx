@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { 
-  Server, AlertCircle, Plug, Unplug, Edit, Trash, RotateCcw, MoreHorizontal, LayoutPanelLeft
+import {
+  Server,
+  AlertCircle,
+  Plug,
+  Unplug,
+  Edit,
+  Trash,
+  RotateCcw,
+  MoreHorizontal,
+  LayoutPanelLeft,
 } from 'lucide-react';
 import { useMcpServers } from '@/hooks/useMcpServers';
 import { useMcpTools } from '@/hooks/useMcpTools';
@@ -15,7 +23,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { AddEditServerDialog } from './AddEditServerDialog';
 import { toast } from 'sonner';
@@ -23,22 +31,17 @@ import { cn } from '@/lib/utils';
 
 export function Workspace() {
   const { t } = useTranslation();
-  const { 
-    activeServerId, 
-    setActiveServerId, 
-    selectedTool, 
+  const {
+    activeServerId,
+    setActiveServerId,
+    selectedTool,
     setSelectedTool,
     toggleInspector,
-    isInspectorOpen
+    isInspectorOpen,
   } = useAppStore();
-  const { 
-    servers, 
-    connectServer, 
-    disconnectServer, 
-    deleteServer, 
-    reconnectServer 
-  } = useMcpServers();
-  
+  const { servers, connectServer, disconnectServer, deleteServer, reconnectServer } =
+    useMcpServers();
+
   const { tools, refreshTools } = useMcpTools(activeServerId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
@@ -91,7 +94,7 @@ export function Workspace() {
   const handleDelete = async () => {
     if (!activeServer) return;
     if (!confirm(t('workspace.deleteServerConfirm'))) return;
-    
+
     try {
       await deleteServer.mutateAsync(activeServer.id);
       toast.success(t('mcp.servers.actions.deleteSuccess'));
@@ -119,8 +122,8 @@ export function Workspace() {
     <div className="flex flex-col h-full bg-background/50 backdrop-blur-sm">
       {/* Server Header */}
       <div className="flex items-center justify-between p-4 border-b border-border/40 bg-card/30 backdrop-blur-md shrink-0">
-        <div data-tauri-drag-region className="absolute top-0 left-0 w-full h-4" /> 
-        
+        <div data-tauri-drag-region className="absolute top-0 left-0 w-full h-4" />
+
         <div className="flex items-center gap-4 z-10">
           <div>
             <h1 className="text-lg font-bold flex items-center gap-2">
@@ -131,10 +134,14 @@ export function Workspace() {
                 </span>
               )}
               {activeServer?.name}
-              <Badge variant={connected ? "default" : "outline"} className={cn(
-                "ml-2 text-[10px] h-5",
-                activeServer?.status === 'error' && "bg-destructive text-destructive-foreground border-destructive"
-              )}>
+              <Badge
+                variant={connected ? 'default' : 'outline'}
+                className={cn(
+                  'ml-2 text-[10px] h-5',
+                  activeServer?.status === 'error' &&
+                    'bg-destructive text-destructive-foreground border-destructive'
+                )}
+              >
                 {activeServer?.status}
               </Badge>
             </h1>
@@ -142,7 +149,9 @@ export function Workspace() {
               {activeServer?.url}
               {connected && tools && tools.length > 0 && (
                 <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
-                  {t(tools.length === 1 ? 'workspace.toolCount_one' : 'workspace.toolCount_other', { count: tools.length })}
+                  {t(tools.length === 1 ? 'workspace.toolCount_one' : 'workspace.toolCount_other', {
+                    count: tools.length,
+                  })}
                 </Badge>
               )}
             </p>
@@ -180,21 +189,26 @@ export function Workspace() {
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleDelete} className="text-destructive focus:text-destructive">
+              <DropdownMenuItem
+                onClick={handleDelete}
+                className="text-destructive focus:text-destructive"
+              >
                 <Trash className="mr-2 h-4 w-4" />
                 {t('mcp.servers.actions.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button 
-            variant="ghost" 
-            size="icon-sm" 
+          <Button
+            variant="ghost"
+            size="icon-sm"
             className="ml-1 border border-border/50 bg-background/50"
             onClick={toggleInspector}
             title={isInspectorOpen ? t('workspace.inspector.hide') : t('workspace.inspector.show')}
           >
-            <LayoutPanelLeft className={cn("h-4 w-4 transition-transform", !isInspectorOpen && "rotate-180")} />
+            <LayoutPanelLeft
+              className={cn('h-4 w-4 transition-transform', !isInspectorOpen && 'rotate-180')}
+            />
           </Button>
         </div>
       </div>
@@ -203,27 +217,24 @@ export function Workspace() {
       <div className="flex-1 overflow-hidden relative">
         {!connected && !selectedTool && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
-             <div className="bg-muted/30 p-4 rounded-full mb-4">
-               <AlertCircle className="h-12 w-12 text-muted-foreground/50" />
-             </div>
-             <h3 className="text-lg font-medium text-muted-foreground">{t('workspace.serverDisconnected.title')}</h3>
-             <Button variant="default" className="mt-4 gap-2" onClick={handleConnect}>
-                <Plug className="h-4 w-4" /> {t('workspace.connectToView')}
-             </Button>
+            <div className="bg-muted/30 p-4 rounded-full mb-4">
+              <AlertCircle className="h-12 w-12 text-muted-foreground/50" />
+            </div>
+            <h3 className="text-lg font-medium text-muted-foreground">
+              {t('workspace.serverDisconnected.title')}
+            </h3>
+            <Button variant="default" className="mt-4 gap-2" onClick={handleConnect}>
+              <Plug className="h-4 w-4" /> {t('workspace.connectToView')}
+            </Button>
           </div>
         )}
 
         {/* Keep ToolList mounted to preserve scroll position */}
-        <div className={cn("h-full w-full", selectedTool ? "hidden" : "flex flex-col")}>
-            <ToolList />
+        <div className={cn('h-full w-full', selectedTool ? 'hidden' : 'flex flex-col')}>
+          <ToolList />
         </div>
 
-        {selectedTool && (
-          <ToolDetail 
-            tool={selectedTool} 
-            onBack={() => setSelectedTool(null)} 
-          />
-        )}
+        {selectedTool && <ToolDetail tool={selectedTool} onBack={() => setSelectedTool(null)} />}
       </div>
 
       <AddEditServerDialog

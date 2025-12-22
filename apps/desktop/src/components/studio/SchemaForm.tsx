@@ -28,7 +28,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
     try {
       setParsedSchema(JSON.parse(schema));
     } catch (e) {
-      console.error("Invalid schema JSON", e);
+      console.error('Invalid schema JSON', e);
     }
   }, [schema]);
 
@@ -71,23 +71,21 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
       {sortedKeys.map((key) => {
         const prop = properties[key];
         const isRequired = required?.includes(key);
-        
+
         // Handle types
         let type = prop.type;
         // Handle anyOf/oneOf if type is missing (simple heuristic)
         if (!type && (prop.anyOf || prop.oneOf)) {
-           const variants = prop.anyOf || prop.oneOf;
-           const nonNull = variants.find((v: any) => v.type !== 'null');
-           if (nonNull) type = nonNull.type;
+          const variants = prop.anyOf || prop.oneOf;
+          const nonNull = variants.find((v: any) => v.type !== 'null');
+          if (nonNull) type = nonNull.type;
         }
 
         const label = (
-          <Label className={cn("text-sm mb-1.5 block", isRequired && "font-semibold text-primary")}>
+          <Label className={cn('text-sm mb-1.5 block', isRequired && 'font-semibold text-primary')}>
             {key}
             {isRequired && <span className="text-red-500 ml-0.5">*</span>}
-            <span className="ml-2 text-xs font-normal text-muted-foreground/70">
-              {type}
-            </span>
+            <span className="ml-2 text-xs font-normal text-muted-foreground/70">{type}</span>
           </Label>
         );
 
@@ -98,7 +96,10 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
         // Render based on type
         if (type === 'boolean') {
           return (
-            <div key={key} className="flex items-center justify-between border rounded-lg p-3 bg-card/50">
+            <div
+              key={key}
+              className="flex items-center justify-between border rounded-lg p-3 bg-card/50"
+            >
               <div className="space-y-0.5">
                 {label}
                 {description}
@@ -112,7 +113,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
         }
 
         if (prop.enum) {
-           return (
+          return (
             <div key={key} className="space-y-1">
               {label}
               <Select
@@ -132,7 +133,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
               </Select>
               {description}
             </div>
-           );
+          );
         }
 
         if (type === 'integer' || type === 'number') {
@@ -144,8 +145,8 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
                 placeholder={String(prop.default || '')}
                 value={formData[key] ?? ''}
                 onChange={(e) => {
-                   const val = e.target.value;
-                   handleFieldChange(key, val === '' ? undefined : Number(val));
+                  const val = e.target.value;
+                  handleFieldChange(key, val === '' ? undefined : Number(val));
                 }}
               />
               {description}
@@ -175,14 +176,18 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
             <Textarea
               className="font-mono text-xs h-20"
               placeholder="{ ... }"
-              value={typeof formData[key] === 'object' ? JSON.stringify(formData[key], null, 2) : formData[key] ?? ''}
+              value={
+                typeof formData[key] === 'object'
+                  ? JSON.stringify(formData[key], null, 2)
+                  : (formData[key] ?? '')
+              }
               onChange={(e) => {
                 try {
-                   const parsed = JSON.parse(e.target.value);
-                   handleFieldChange(key, parsed);
+                  const parsed = JSON.parse(e.target.value);
+                  handleFieldChange(key, parsed);
                 } catch {
-                   // Just update the string if invalid JSON (won't save correctly to object though, logic limitation for MVP)
-                   // Ideally we keep a local string state for this field
+                  // Just update the string if invalid JSON (won't save correctly to object though, logic limitation for MVP)
+                  // Ideally we keep a local string state for this field
                 }
               }}
             />

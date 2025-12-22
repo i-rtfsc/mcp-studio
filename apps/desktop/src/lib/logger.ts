@@ -25,12 +25,18 @@ class LoggerService {
 
   private getConsoleStyle(level: LogLevel): string {
     switch (level) {
-      case 'trace': return 'color: #999';
-      case 'debug': return 'color: #3b82f6';
-      case 'info': return 'color: #22c55e';
-      case 'warn': return 'color: #eab308';
-      case 'error': return 'color: #ef4444; font-weight: bold';
-      default: return '';
+      case 'trace':
+        return 'color: #999';
+      case 'debug':
+        return 'color: #3b82f6';
+      case 'info':
+        return 'color: #22c55e';
+      case 'warn':
+        return 'color: #eab308';
+      case 'error':
+        return 'color: #ef4444; font-weight: bold';
+      default:
+        return '';
     }
   }
 
@@ -43,7 +49,11 @@ class LoggerService {
     }
   }
 
-  public async log(level: LogLevel, message: string, meta?: { target?: string; fields?: Record<string, unknown> }) {
+  public async log(
+    level: LogLevel,
+    message: string,
+    meta?: { target?: string; fields?: Record<string, unknown> }
+  ) {
     // 1. Browser Console (Dev friendly)
     if (import.meta.env.DEV) {
       const style = this.getConsoleStyle(level);

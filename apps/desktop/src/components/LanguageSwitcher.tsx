@@ -33,15 +33,11 @@ export function LanguageSwitcher() {
           <DropdownMenuItem
             key={lang.code}
             onClick={() => changeLanguage(lang.code)}
-            className={`cursor-pointer ${
-              i18n.language === lang.code ? 'bg-accent' : ''
-            }`}
+            className={`cursor-pointer ${i18n.language === lang.code ? 'bg-accent' : ''}`}
           >
             <span className="flex items-center justify-between w-full">
               {lang.label}
-              {i18n.language === lang.code && (
-                <span className="ml-2 text-primary">✓</span>
-              )}
+              {i18n.language === lang.code && <span className="ml-2 text-primary">✓</span>}
             </span>
           </DropdownMenuItem>
         ))}

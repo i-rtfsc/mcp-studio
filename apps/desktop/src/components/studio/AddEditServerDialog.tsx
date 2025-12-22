@@ -28,7 +28,11 @@ interface AddEditServerDialogProps {
   serverToEdit?: McpServer | null;
 }
 
-export function AddEditServerDialog({ open, onOpenChange, serverToEdit }: AddEditServerDialogProps) {
+export function AddEditServerDialog({
+  open,
+  onOpenChange,
+  serverToEdit,
+}: AddEditServerDialogProps) {
   const { t } = useTranslation();
   const { setActiveServerId } = useAppStore();
   const [formData, setFormData] = useState<CreateMcpServerCmd>({
@@ -86,7 +90,9 @@ export function AddEditServerDialog({ open, onOpenChange, serverToEdit }: AddEdi
             {serverToEdit ? t('mcp.servers.dialog.editTitle') : t('mcp.servers.dialog.title')}
           </DialogTitle>
           <DialogDescription>
-            {serverToEdit ? t('mcp.servers.dialog.editDescription') : t('mcp.servers.dialog.description')}
+            {serverToEdit
+              ? t('mcp.servers.dialog.editDescription')
+              : t('mcp.servers.dialog.description')}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -103,7 +109,9 @@ export function AddEditServerDialog({ open, onOpenChange, serverToEdit }: AddEdi
             <Label htmlFor="server_type">{t('mcp.servers.form.type')}</Label>
             <Select
               value={formData.server_type}
-              onValueChange={(value) => setFormData({ ...formData, server_type: value as 'sse' | 'streamable_http' })}
+              onValueChange={(value) =>
+                setFormData({ ...formData, server_type: value as 'sse' | 'streamable_http' })
+              }
             >
               <SelectTrigger id="server_type">
                 <SelectValue placeholder={t('mcp.servers.form.typePlaceholder')} />
@@ -129,8 +137,8 @@ export function AddEditServerDialog({ open, onOpenChange, serverToEdit }: AddEdi
             {createServer.isPending || updateServer.isPending
               ? t('mcp.servers.form.submitting')
               : serverToEdit
-              ? t('mcp.servers.form.update')
-              : t('mcp.servers.form.submit')}
+                ? t('mcp.servers.form.update')
+                : t('mcp.servers.form.submit')}
           </Button>
         </DialogFooter>
       </DialogContent>

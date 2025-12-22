@@ -39,7 +39,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
     if (savedInterval) {
       setHeartbeatInterval(savedInterval);
     }
-    
+
     getVersion().then(setAppVersion).catch(console.error);
   }, [getSetting]);
 
@@ -54,7 +54,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
       toast.error(t('settings.heartbeatIntervalError'));
       return;
     }
-    
+
     setHeartbeatInterval(value);
     try {
       await updateSetting({ key: 'heartbeat_interval', value });
@@ -69,18 +69,16 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{t('settings.title')}</DialogTitle>
-          <DialogDescription>
-            {t('settings.description')}
-          </DialogDescription>
+          <DialogDescription>{t('settings.description')}</DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-6 py-4">
           <div className="space-y-4">
             <h4 className="font-medium leading-none">{t('settings.appearance')}</h4>
             <p className="text-[0.8rem] text-muted-foreground">
               {t('settings.appearanceDescription')}
             </p>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="theme" className="text-right">
                 {t('settings.themeMode')}
@@ -112,15 +110,15 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               </Select>
             </div>
           </div>
-          
+
           <Separator />
-          
+
           <div className="space-y-4">
             <h4 className="font-medium leading-none">{t('settings.advanced')}</h4>
             <p className="text-[0.8rem] text-muted-foreground">
               {t('settings.advancedDescription')}
             </p>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="heartbeat" className="text-right">
                 {t('settings.heartbeatInterval')}
@@ -146,9 +144,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
         </div>
 
         <div className="flex justify-center border-t pt-4">
-          <p className="text-xs text-muted-foreground">
-            Version {appVersion || '...'}
-          </p>
+          <p className="text-xs text-muted-foreground">Version {appVersion || '...'}</p>
         </div>
       </DialogContent>
     </Dialog>

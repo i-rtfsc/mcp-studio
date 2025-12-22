@@ -12,22 +12,20 @@ const getStoredLanguage = () => {
   }
 };
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources: {
-      'zh-CN': {
-        translation: zhCN,
-      },
-      'en-US': {
-        translation: enUS,
-      },
+i18n.use(initReactI18next).init({
+  resources: {
+    'zh-CN': {
+      translation: zhCN,
     },
-    lng: getStoredLanguage(),
-    fallbackLng: 'zh-CN',
-    interpolation: {
-      escapeValue: false,
+    'en-US': {
+      translation: enUS,
     },
-  });
+  },
+  lng: getStoredLanguage(),
+  fallbackLng: 'zh-CN',
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 export default i18n;
