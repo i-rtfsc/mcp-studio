@@ -179,6 +179,7 @@ impl CommandHandler<RefreshMcpToolsCmd, McpToolsListResult> for McpCommandHandle
                 description: t.description.clone(),
                 input_schema: t.input_schema.clone(),
                 output_schema: t.output_schema.clone(),
+                extra: t.extra.clone(),
                 created_at: String::new(),
             })
             .collect();

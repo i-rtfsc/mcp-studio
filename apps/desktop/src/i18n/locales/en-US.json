@@ -128,8 +128,8 @@
     "success": "Success",
     "failed": "Failed",
     "noContentItems": "No content items returned.",
-    "displayCard": "DisplayCard #{{index}}",
-    "fullResponse": "Full Response Payload",
+    "displayCard": "Result #{{index}}",
+    "fullResponse": "Response JSON",
     "copy": "Copy",
     "readyToExecute": "Ready to Execute",
     "executeHint": "Configure parameters on the left and click Execute to see results here.",
@@ -150,7 +150,8 @@
       "exportJson": "Export JSON",
       "noToolsFound": "No tools found matching your search.",
       "noDescription": "No description provided",
-      "rawResponseTitle": "Raw Tool List Response"
+      "rawResponseTitle": "Raw Tool List Response",
+      "outputSchema": "Output Schema"
     }
   },
   "http": {

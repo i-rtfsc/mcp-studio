@@ -88,6 +88,7 @@ pub struct McpToolInfo {
     pub description: Option<String>,
     pub input_schema: Option<String>,
     pub output_schema: Option<String>,
+    pub extra: Option<String>, // JSON string
 }
 
 /// Result of listing tools
@@ -377,15 +378,33 @@ impl McpClientManager {
                     serde_json::to_string_pretty(&*t.input_schema).ok().filter(|s| s != "{}");
 
                 // output_schema is also Arc<serde_json::Map<String, Value>>, serialize it
-                let output_schema = t.output_schema.and_then(|schema| {
-                    serde_json::to_string_pretty(&*schema).ok().filter(|s| s != "{}")
+                let output_schema = t.output_schema.as_ref().and_then(|schema| {
+                    serde_json::to_string_pretty(&**schema).ok().filter(|s| s != "{}")
                 });
+
+                // Convert tool to Value to capture extra fields like annotations and _meta
+                let mut tool_value = serde_json::to_value(&t).unwrap_or(serde_json::Value::Null);
+                
+                // Remove known fields
+                if let Some(obj) = tool_value.as_object_mut() {
+                    obj.remove("name");
+                    obj.remove("description");
+                    obj.remove("inputSchema");
+                    obj.remove("outputSchema");
+                }
+                
+                let extra = if tool_value.is_object() && !tool_value.as_object().unwrap().is_empty() {
+                    serde_json::to_string(&tool_value).ok()
+                } else {
+                    None
+                };
 
                 McpToolInfo {
                     name: t.name.to_string(),
-                    description: t.description.map(|d| d.to_string()),
+                    description: t.description.as_ref().map(|d| d.to_string()),
                     input_schema,
                     output_schema,
+                    extra,
                 }
             })
             .collect();
@@ -442,6 +461,14 @@ impl McpClientManager {
 
         // Clone tool_name to own it
         let tool_name_owned = tool_name.to_string();
+
+        // TODO: rmcp 0.11 does not support _meta in CallToolRequestParam.
+        // We should upgrade to a newer version or wait for support to inject clientId/clientName.
+        // let meta = serde_json::json!({
+        //     "clientId": "mcp-studio",
+        //     "clientName": "mcp-studio",
+        //     "version": "0.1.0"
+        // });
 
         // Call the tool
         info!(target: "mcp_client", "Sending tool call request to server...");

@@ -4,6 +4,7 @@ import { useMcpTools } from '@/hooks/useMcpTools';
 import { useAppStore } from '@/lib/store';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -193,12 +194,34 @@ export function ToolList() {
                     
                     <div className="flex-1 min-w-0 py-0.5">
                       <div className="flex items-center justify-between mb-1 gap-2">
-                        <h3 className={cn(
-                          "font-medium text-sm truncate transition-colors",
-                          isSelected ? "text-primary" : "text-foreground/90 group-hover:text-foreground"
-                        )}>
-                          {tool.name}
-                        </h3>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <h3 className={cn(
+                            "font-medium text-sm truncate transition-colors",
+                            isSelected ? "text-primary" : "text-foreground/90 group-hover:text-foreground"
+                          )}>
+                            {tool.name}
+                          </h3>
+                          {tool.output_schema && (
+                            <Badge variant="outline" className="h-4 px-1 text-[9px] text-muted-foreground border-primary/20 bg-primary/5 shrink-0">
+                              {t('tool.list.outputSchema')}
+                            </Badge>
+                          )}
+                          {(() => {
+                            if (!tool.extra) return null;
+                            try {
+                              const extra = JSON.parse(tool.extra);
+                              const agents = extra._meta?.allowedAgents;
+                              if (Array.isArray(agents)) {
+                                return agents.map((agent: string) => (
+                                  <Badge key={agent} variant="secondary" className="h-4 px-1 text-[9px] bg-purple-500/10 text-purple-600 hover:bg-purple-500/20 border border-purple-500/20 shrink-0 font-medium">
+                                    {agent}
+                                  </Badge>
+                                ));
+                              }
+                            } catch {}
+                            return null;
+                          })()}
+                        </div>
                          <ChevronRight className={cn(
                            "h-3.5 w-3.5 transition-all duration-300",
                            isSelected ? "text-primary translate-x-0 opacity-100" : "text-muted-foreground/30 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0"

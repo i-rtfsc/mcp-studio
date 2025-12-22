@@ -105,6 +105,7 @@ pub struct McpTool {
     pub description: Option<String>,
     pub input_schema: Option<String>,  // JSON string
     pub output_schema: Option<String>, // JSON string
+    pub extra: Option<String>,         // JSON string (annotations, _meta, etc.)
     pub created_at: String,
 }
 

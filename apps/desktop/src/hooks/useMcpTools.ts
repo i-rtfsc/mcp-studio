@@ -9,6 +9,7 @@ export interface McpTool {
   description: string | null;
   input_schema: string | null;  // JSON string
   output_schema: string | null; // JSON string
+  extra: string | null;         // JSON string (annotations, _meta, etc.)
   created_at: string;
 }
 

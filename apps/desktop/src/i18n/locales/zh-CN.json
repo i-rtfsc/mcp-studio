@@ -128,8 +128,8 @@
     "success": "成功",
     "failed": "失败",
     "noContentItems": "未返回内容项。",
-    "displayCard": "展示卡片 #{{index}}",
-    "fullResponse": "完整响应载荷",
+    "displayCard": "结果 #{{index}}",
+    "fullResponse": "响应Json",
     "copy": "复制",
     "readyToExecute": "准备执行",
     "executeHint": "在左侧配置参数，点击执行以在此查看结果。",
@@ -150,7 +150,8 @@
       "exportJson": "导出 JSON",
       "noToolsFound": "未找到匹配的工具。",
       "noDescription": "暂无描述",
-      "rawResponseTitle": "工具列表原始响应"
+      "rawResponseTitle": "工具列表原始响应",
+      "outputSchema": "复杂数据类型"
     }
   },
   "http": {
