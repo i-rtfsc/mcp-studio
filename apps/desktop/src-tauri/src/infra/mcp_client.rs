@@ -156,7 +156,7 @@ impl McpClientManager {
             client_info: Implementation {
                 name: "MCP Studio".to_string(),
                 title: Some("MCP Studio Debug Client".to_string()),
-                version: "0.1.0".to_string(),
+                version: "0.2.0".to_string(),
                 website_url: None,
                 icons: None,
             },

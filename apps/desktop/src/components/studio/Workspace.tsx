@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Server,
   AlertCircle,
@@ -11,12 +12,15 @@ import {
   RotateCcw,
   MoreHorizontal,
   LayoutPanelLeft,
+  Wrench,
+  TestTube,
 } from 'lucide-react';
 import { useMcpServers } from '@/hooks/useMcpServers';
 import { useMcpTools } from '@/hooks/useMcpTools';
 import { useAppStore } from '@/lib/store';
 import { ToolDetail } from './ToolDetail';
 import { ToolList } from './ToolList';
+import { BatchTester } from './BatchTester';
 import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
@@ -44,6 +48,7 @@ export function Workspace() {
 
   const { tools, refreshTools } = useMcpTools(activeServerId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('tools');
 
   const activeServer = servers?.find((s) => s.id === activeServerId);
   const connected = activeServer?.status === 'connected';
@@ -51,6 +56,7 @@ export function Workspace() {
   // Reset selection when server changes
   useEffect(() => {
     setSelectedTool(null);
+    setActiveTab('tools');
   }, [activeServerId]);
 
   // Actions
@@ -229,12 +235,32 @@ export function Workspace() {
           </div>
         )}
 
-        {/* Keep ToolList mounted to preserve scroll position */}
-        <div className={cn('h-full w-full', selectedTool ? 'hidden' : 'flex flex-col')}>
-          <ToolList />
-        </div>
+        {selectedTool ? (
+          <ToolDetail tool={selectedTool} onBack={() => setSelectedTool(null)} />
+        ) : (
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+            <div className="border-b border-border/40 bg-card/20 px-4">
+              <TabsList className="h-11">
+                <TabsTrigger value="tools" className="gap-2">
+                  <Wrench className="h-4 w-4" />
+                  {t('workspace.tabs.tools')}
+                </TabsTrigger>
+                <TabsTrigger value="batch-test" className="gap-2">
+                  <TestTube className="h-4 w-4" />
+                  {t('workspace.tabs.batchTest')}
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-        {selectedTool && <ToolDetail tool={selectedTool} onBack={() => setSelectedTool(null)} />}
+            <TabsContent value="tools" className="flex-1 m-0 overflow-hidden">
+              <ToolList />
+            </TabsContent>
+
+            <TabsContent value="batch-test" className="flex-1 m-0 overflow-hidden">
+              <BatchTester />
+            </TabsContent>
+          </Tabs>
+        )}
       </div>
 
       <AddEditServerDialog

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMcpTools } from '@/hooks/useMcpTools';
 import { useAppStore } from '@/lib/store';
 import { toast } from 'sonner';
@@ -51,12 +52,21 @@ export function ToolList() {
   const [search, setSearch] = useState('');
   const [showJsonDialog, setShowJsonDialog] = useState(false);
   const [rawJsonContent, setRawJsonContent] = useState('');
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const filteredTools = tools?.filter(
     (tool) =>
       tool.name.toLowerCase().includes(search.toLowerCase()) ||
       (tool.description && tool.description.toLowerCase().includes(search.toLowerCase()))
   );
+
+  // Virtual scrolling for large tool lists
+  const virtualizer = useVirtualizer({
+    count: filteredTools?.length ?? 0,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 85, // Estimated height of each tool item
+    overscan: 5, // Render 5 items outside viewport for smooth scrolling
+  });
 
   const handleViewRawJson = async () => {
     if (!activeServerId) return;
@@ -167,7 +177,11 @@ export function ToolList() {
       </div>
 
       {/* Tool List */}
-      <ScrollArea className="flex-1">
+      <div
+        ref={parentRef}
+        className="flex-1 overflow-y-auto"
+        style={{ contain: 'strict' }}
+      >
         <div className="p-4">
           {isLoading ? (
             <ToolListSkeleton />
@@ -191,91 +205,110 @@ export function ToolList() {
               <p className="text-sm">{t('tool.list.noToolsFound')}</p>
             </div>
           ) : (
-            <div className="space-y-3 pb-4">
-              {filteredTools?.map((tool, index) => {
+            <div
+              style={{
+                height: `${virtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              {virtualizer.getVirtualItems().map((virtualRow) => {
+                const tool = filteredTools![virtualRow.index];
                 const isSelected = selectedTool?.name === tool.name;
                 return (
                   <div
-                    key={tool.name}
-                    onClick={() => setSelectedTool(tool)}
-                    style={{ animationDelay: `${index * 0.05}s`, animationFillMode: 'both' }}
-                    className={cn(
-                      'group flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500',
-                      isSelected
-                        ? 'bg-primary/5 border-primary/50 shadow-sm'
-                        : 'bg-card border-border/40 hover:bg-accent/50 hover:border-primary/30 hover:shadow-md'
-                    )}
+                    key={virtualRow.key}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                    className="pb-3"
                   >
-                    {isSelected && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
-                    )}
-
                     <div
+                      onClick={() => setSelectedTool(tool)}
                       className={cn(
-                        'mt-0.5 p-2 rounded-lg transition-colors shrink-0',
+                        'group flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 relative overflow-hidden',
                         isSelected
-                          ? 'bg-primary/20 text-primary'
-                          : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
+                          ? 'bg-primary/5 border-primary/50 shadow-sm'
+                          : 'bg-card border-border/40 hover:bg-accent/50 hover:border-primary/30 hover:shadow-md'
                       )}
                     >
-                      <Wrench className="h-4 w-4" />
-                    </div>
+                      {isSelected && (
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
+                      )}
 
-                    <div className="flex-1 min-w-0 py-0.5">
-                      <div className="flex items-center justify-between mb-1 gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <h3
-                            className={cn(
-                              'font-medium text-sm truncate transition-colors',
-                              isSelected
-                                ? 'text-primary'
-                                : 'text-foreground/90 group-hover:text-foreground'
-                            )}
-                          >
-                            {tool.name}
-                          </h3>
-                          {tool.output_schema && (
-                            <Badge
-                              variant="outline"
-                              className="h-4 px-1 text-[9px] text-muted-foreground border-primary/20 bg-primary/5 shrink-0"
-                            >
-                              {t('tool.list.outputSchema')}
-                            </Badge>
-                          )}
-                          {(() => {
-                            if (!tool.extra) return null;
-                            try {
-                              const extra = JSON.parse(tool.extra);
-                              const agents = extra._meta?.allowedAgents;
-                              if (Array.isArray(agents)) {
-                                return agents.map((agent: string) => (
-                                  <Badge
-                                    key={agent}
-                                    variant="secondary"
-                                    className="h-4 px-1 text-[9px] bg-purple-500/10 text-purple-600 hover:bg-purple-500/20 border border-purple-500/20 shrink-0 font-medium"
-                                  >
-                                    {agent}
-                                  </Badge>
-                                ));
-                              }
-                            } catch {
-                              // Ignore JSON parse errors for extra agents
-                            }
-                            return null;
-                          })()}
-                        </div>
-                        <ChevronRight
-                          className={cn(
-                            'h-3.5 w-3.5 transition-all duration-300',
-                            isSelected
-                              ? 'text-primary translate-x-0 opacity-100'
-                              : 'text-muted-foreground/30 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0'
-                          )}
-                        />
+                      <div
+                        className={cn(
+                          'mt-0.5 p-2 rounded-lg transition-colors shrink-0',
+                          isSelected
+                            ? 'bg-primary/20 text-primary'
+                            : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
+                        )}
+                      >
+                        <Wrench className="h-4 w-4" />
                       </div>
-                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed opacity-90">
-                        {tool.description || t('tool.list.noDescription')}
-                      </p>
+
+                      <div className="flex-1 min-w-0 py-0.5">
+                        <div className="flex items-center justify-between mb-1 gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <h3
+                              className={cn(
+                                'font-medium text-sm truncate transition-colors',
+                                isSelected
+                                  ? 'text-primary'
+                                  : 'text-foreground/90 group-hover:text-foreground'
+                              )}
+                            >
+                              {tool.name}
+                            </h3>
+                            {tool.output_schema && (
+                              <Badge
+                                variant="outline"
+                                className="h-4 px-1 text-[9px] text-muted-foreground border-primary/20 bg-primary/5 shrink-0"
+                              >
+                                {t('tool.list.outputSchema')}
+                              </Badge>
+                            )}
+                            {(() => {
+                              if (!tool.extra) return null;
+                              try {
+                                const extra = JSON.parse(tool.extra);
+                                const agents = extra._meta?.allowedAgents;
+                                if (Array.isArray(agents)) {
+                                  return agents.map((agent: string) => (
+                                    <Badge
+                                      key={agent}
+                                      variant="secondary"
+                                      className="h-4 px-1 text-[9px] bg-purple-500/10 text-purple-600 hover:bg-purple-500/20 border border-purple-500/20 shrink-0 font-medium"
+                                    >
+                                      {agent}
+                                    </Badge>
+                                  ));
+                                }
+                              } catch {
+                                // Ignore JSON parse errors for extra agents
+                              }
+                              return null;
+                            })()}
+                          </div>
+                          <ChevronRight
+                            className={cn(
+                              'h-3.5 w-3.5 transition-all duration-300',
+                              isSelected
+                                ? 'text-primary translate-x-0 opacity-100'
+                                : 'text-muted-foreground/30 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0'
+                            )}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed opacity-90">
+                          {tool.description || t('tool.list.noDescription')}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 );
@@ -283,7 +316,7 @@ export function ToolList() {
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Raw JSON Dialog */}
       <Dialog open={showJsonDialog} onOpenChange={setShowJsonDialog}>

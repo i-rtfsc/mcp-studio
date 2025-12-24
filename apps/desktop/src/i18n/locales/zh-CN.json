@@ -24,6 +24,10 @@
     "inspector": {
       "hide": "隐藏检查器",
       "show": "显示检查器"
+    },
+    "tabs": {
+      "tools": "工具列表",
+      "batchTest": "批量测试"
     }
   },
   "mcp": {
@@ -252,5 +256,43 @@
     "openFolderError": "无法打开日志文件夹",
     "resetSuccess": "数据库已重置",
     "resetError": "重置失败"
+  },
+  "batchTester": {
+    "title": "批量工具测试",
+    "description": "一次性测试多个工具并导出结果到 CSV",
+    "inputTitle": "输入",
+    "inputDescription": "以 JSON 数组形式输入工具名称",
+    "toolNamesLabel": "工具名称（JSON 数组）",
+    "tools": "个工具",
+    "delayLabel": "调用间隔延迟",
+    "delayHint": "每次工具调用之间的延迟时间（0 表示无延迟）",
+    "format": "格式化",
+    "formatHint": "粘贴文本后点击格式化，自动生成 com_ 工具的 JSON 数组",
+    "formatSuccess": "已格式化 {{count}} 个唯一工具",
+    "formatEmpty": "输入中未找到 com_ 开头的工具",
+    "start": "开始批量测试",
+    "running": "运行中...",
+    "exportCsv": "导出 CSV",
+    "resultsTitle": "结果",
+    "resultsCount": "{{count}} 个结果",
+    "noResults": "暂无结果",
+    "runTestsHint": "运行批量测试以查看结果",
+    "progress": "进度",
+    "success": "成功",
+    "failed": "失败",
+    "successRate": "成功率",
+    "completed": "批量测试完成：共 {{total}} 个，成功 {{succeeded}} 个，失败 {{failed}} 个",
+    "noServer": "请先选择一个服务器",
+    "invalidFormat": "输入必须是字符串数组的 JSON 格式",
+    "invalidJson": "无效的 JSON 格式",
+    "exportSuccess": "结果导出成功",
+    "exportError": "导出结果失败：{{error}}",
+    "csv": {
+      "toolName": "工具名称",
+      "status": "状态",
+      "duration": "耗时（毫秒）",
+      "result": "结果",
+      "timestamp": "时间戳"
+    }
   }
 }

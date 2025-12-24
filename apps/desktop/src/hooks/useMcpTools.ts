@@ -38,6 +38,25 @@ export interface McpCallHistory {
   created_at: string;
 }
 
+// Batch testing types
+export interface BatchTestResult {
+  toolName: string;
+  success: boolean;
+  duration_ms: number;
+  result?: unknown;
+  error?: string;
+  timestamp: string;
+}
+
+export interface BatchTestProgress {
+  total: number;
+  completed: number;
+  succeeded: number;
+  failed: number;
+  isRunning: boolean;
+  results: BatchTestResult[];
+}
+
 export function useMcpTools(serverId: string | null) {
   const queryClient = useQueryClient();
 

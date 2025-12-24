@@ -1,6 +1,6 @@
 {
   "name": "@tauri2-react-template/desktop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "MCP Studio - A professional MCP client debugging tool with Tauri 2 + React + DDD/CQRS architecture",

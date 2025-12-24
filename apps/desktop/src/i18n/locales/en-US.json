@@ -24,6 +24,10 @@
     "inspector": {
       "hide": "Hide Inspector",
       "show": "Show Inspector"
+    },
+    "tabs": {
+      "tools": "Tools",
+      "batchTest": "Batch Test"
     }
   },
   "mcp": {
@@ -252,5 +256,43 @@
     "openFolderError": "Failed to open log folder",
     "resetSuccess": "Database has been reset",
     "resetError": "Reset failed"
+  },
+  "batchTester": {
+    "title": "Batch Tool Testing",
+    "description": "Test multiple tools at once and export results to CSV",
+    "inputTitle": "Input",
+    "inputDescription": "Enter tool names as JSON array",
+    "toolNamesLabel": "Tool Names (JSON Array)",
+    "tools": "tools",
+    "delayLabel": "Call Interval Delay",
+    "delayHint": "Delay time between each tool call (0 means no delay)",
+    "format": "Format",
+    "formatHint": "Paste text and click Format to auto-generate JSON array with com_ tools",
+    "formatSuccess": "Formatted {{count}} unique tools",
+    "formatEmpty": "No com_ tools found in input",
+    "start": "Start Batch Test",
+    "running": "Running...",
+    "exportCsv": "Export CSV",
+    "resultsTitle": "Results",
+    "resultsCount": "{{count}} results",
+    "noResults": "No results yet",
+    "runTestsHint": "Run batch tests to see results here",
+    "progress": "Progress",
+    "success": "Success",
+    "failed": "Failed",
+    "successRate": "Success Rate",
+    "completed": "Batch test completed: {{succeeded}} succeeded, {{failed}} failed out of {{total}}",
+    "noServer": "Please select a server first",
+    "invalidFormat": "Input must be a JSON array of strings",
+    "invalidJson": "Invalid JSON format",
+    "exportSuccess": "Results exported successfully",
+    "exportError": "Failed to export results: {{error}}",
+    "csv": {
+      "toolName": "Tool Name",
+      "status": "Status",
+      "duration": "Duration (ms)",
+      "result": "Result",
+      "timestamp": "Timestamp"
+    }
   }
 }

@@ -29,7 +29,7 @@ impl HttpClient {
     pub fn new() -> Result<Self, AppError> {
         let client = Client::builder()
             .timeout(Duration::from_secs(30))
-            .user_agent("Tauri-React-Template/0.1.0")
+            .user_agent("Tauri-React-Template/0.2.0")
             .no_proxy()
             .build()
             .map_err(|e| AppError::Unknown(format!("Failed to build http client: {}", e)))?;
