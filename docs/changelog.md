@@ -2,6 +2,17 @@
 
 All notable changes are documented here.
 
+## [0.2.0] - 2025-12-24
+
+### Added
+- Integrated MCP (Model Context Protocol) support via `rmcp` crate
+- Added MCP server management (Add/Edit/Remove)
+- Implemented MCP tool inspection and execution
+- Support for multiple MCP server types (Stdio, SSE)
+- Integrated Batch Tester for MCP tools
+- Enhanced Webhook support for MCP interactions
+- Professional UI for MCP tool debugging
+
 ## [0.1.0] - 2025-12-10
 
 ### Added
