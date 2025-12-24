@@ -1,6 +1,6 @@
 {
   "name": "@tauri2-react-template/desktop",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "description": "MCP Studio - A professional MCP client debugging tool with Tauri 2 + React + DDD/CQRS architecture",
@@ -40,6 +40,7 @@
     "@tabler/icons-react": "^3.35.0",
     "@tanstack/react-query": "^5.61.3",
     "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.13",
     "@tauri-apps/api": "^2.1.1",
     "@tauri-apps/plugin-dialog": "^2.2.0",
     "@tauri-apps/plugin-fs": "^2.2.0",
@@ -61,7 +62,6 @@
     "react-i18next": "^16.3.5",
     "react-resizable-panels": "^3.0.6",
     "react-router-dom": "^7.0.1",
-    "react-virtuoso": "^4.17.0",
     "recharts": "^2.15.4",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.6.0",

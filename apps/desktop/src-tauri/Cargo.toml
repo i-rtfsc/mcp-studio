@@ -1,6 +1,6 @@
 [package]
 name = "mcp-studio"
-version = "0.2.0"
+version = "0.2.1"
 description = "MCP Studio - A MCP Client Debug Tool"
 authors = ["Your Name"]
 edition = "2021"

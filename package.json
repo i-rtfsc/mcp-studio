@@ -1,6 +1,6 @@
 {
   "name": "tauri2-react-template",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "description": "Modern desktop application template with Tauri 2 + Rust + React, featuring DDD + CQRS architecture",
