@@ -18,6 +18,12 @@ interface AppState {
   // Inspector Content
   inspectorTab: 'tools' | 'http';
   setInspectorTab: (tab: 'tools' | 'http') => void;
+
+  // ToolList state (per server)
+  toolListSearch: Record<string, string>; // serverId -> search query
+  setToolListSearch: (serverId: string, search: string) => void;
+  toolListScrollPosition: Record<string, number>; // serverId -> scroll position
+  setToolListScrollPosition: (serverId: string, position: number) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -35,6 +41,18 @@ export const useAppStore = create<AppState>()(
 
       inspectorTab: 'http',
       setInspectorTab: (tab) => set({ inspectorTab: tab }),
+
+      // ToolList state
+      toolListSearch: {},
+      setToolListSearch: (serverId, search) =>
+        set((state) => ({
+          toolListSearch: { ...state.toolListSearch, [serverId]: search },
+        })),
+      toolListScrollPosition: {},
+      setToolListScrollPosition: (serverId, position) =>
+        set((state) => ({
+          toolListScrollPosition: { ...state.toolListScrollPosition, [serverId]: position },
+        })),
     }),
     {
       name: 'mcp-studio-app-state',

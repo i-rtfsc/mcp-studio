@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme, type Theme } from '@/hooks/useTheme';
 import { Separator } from '@/components/ui/separator';
 import { useAppConfig } from '@/hooks/useAppConfig';
 import { useState, useEffect } from 'react';
@@ -30,22 +30,29 @@ interface SettingsDialogProps {
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
-  const { getSetting, updateSetting } = useAppConfig();
+  const { settings, updateSetting } = useAppConfig();
   const [heartbeatInterval, setHeartbeatInterval] = useState<string>('10');
   const [appVersion, setAppVersion] = useState<string>('');
 
+  // Load settings when they change
   useEffect(() => {
-    const savedInterval = getSetting('heartbeat_interval');
-    if (savedInterval) {
-      setHeartbeatInterval(savedInterval);
+    if (settings?.heartbeat_interval) {
+      setHeartbeatInterval(settings.heartbeat_interval);
     }
+  }, [settings]);
 
+  // Load app version once
+  useEffect(() => {
     getVersion().then(setAppVersion).catch(console.error);
-  }, [getSetting]);
+  }, []);
 
   const handleLanguageChange = (value: string) => {
     i18n.changeLanguage(value);
-    localStorage.setItem('language', value);
+    try {
+      localStorage.setItem('language', value);
+    } catch {
+      // localStorage not available
+    }
   };
 
   const handleHeartbeatIntervalChange = async (value: string) => {
@@ -83,7 +90,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               <Label htmlFor="theme" className="text-right">
                 {t('settings.themeMode')}
               </Label>
-              <Select value={theme} onValueChange={(val: any) => setTheme(val)}>
+              <Select value={theme} onValueChange={(val) => setTheme(val as Theme)}>
                 <SelectTrigger id="theme" className="col-span-3">
                   <SelectValue placeholder={t('settings.themeMode')} />
                 </SelectTrigger>

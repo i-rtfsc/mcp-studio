@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMcpTools, type BatchTestProgress, type BatchTestResult } from '@/hooks/useMcpTools';
 import { useAppStore } from '@/lib/store';
@@ -20,43 +20,22 @@ import {
   Clock,
   TestTube,
   CheckCheck,
+  ListPlus,
+  Filter,
+  StopCircle,
+  Pause,
 } from 'lucide-react';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
+import { truncateBase64InObject } from '@/lib/utils';
 
 const STORAGE_KEY = 'mcp_batch_test_input';
 const STORAGE_KEY_DELAY = 'mcp_batch_test_delay';
 
-// Helper to truncate base64 data (same as ToolDetail.tsx)
-const truncateBase64InObject = (obj: any): any => {
-  if (!obj) return obj;
-  if (typeof obj !== 'object') return obj;
-
-  if (Array.isArray(obj)) {
-    return obj.map(truncateBase64InObject);
-  }
-
-  const newObj = { ...obj };
-
-  // Check if this object looks like an image content block
-  if (newObj.type === 'image' && typeof newObj.data === 'string' && newObj.data.length > 100) {
-    newObj.data = `... (${Math.round(newObj.data.length / 1024)} KB base64 data) ...`;
-  } else {
-    // Recursively process other fields
-    for (const key in newObj) {
-      if (Object.prototype.hasOwnProperty.call(newObj, key)) {
-        newObj[key] = truncateBase64InObject(newObj[key]);
-      }
-    }
-  }
-
-  return newObj;
-};
-
 export function BatchTester() {
   const { t, i18n } = useTranslation();
   const { activeServerId } = useAppStore();
-  const { callTool } = useMcpTools(activeServerId);
+  const { callTool, tools, isLoading: isLoadingTools } = useMcpTools(activeServerId);
 
   // Load from localStorage on mount
   const [toolNamesInput, setToolNamesInput] = useState(() => {
@@ -85,6 +64,27 @@ export function BatchTester() {
     isRunning: false,
     results: [],
   });
+
+  // Refs to track test state
+  const cancelledRef = useRef(false);
+  const pausedRef = useRef(false);
+  const pauseResolveRef = useRef<(() => void) | null>(null);
+
+  // UI state for pause button
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Filter for results: 'all' | 'success' | 'failed'
+  const [resultFilter, setResultFilter] = useState<'all' | 'success' | 'failed'>('all');
+
+  // Filtered results based on filter selection (memoized)
+  const filteredResults = useMemo(() => {
+    return progress.results.filter((result) => {
+      if (resultFilter === 'all') return true;
+      if (resultFilter === 'success') return result.success;
+      if (resultFilter === 'failed') return !result.success;
+      return true;
+    });
+  }, [progress.results, resultFilter]);
 
   // Save to localStorage when input changes
   useEffect(() => {
@@ -155,6 +155,20 @@ export function BatchTester() {
     toast.success(t('batchTester.formatSuccess', { count: uniqueTools.length }));
   };
 
+  // Fill all tools from current MCP server
+  const fillAllTools = () => {
+    if (!tools || tools.length === 0) {
+      toast.error(t('batchTester.noToolsAvailable'));
+      return;
+    }
+
+    const toolNames = tools.map((tool) => tool.name).sort();
+    const formattedJson = JSON.stringify(toolNames, null, 2);
+
+    setToolNamesInput(formattedJson);
+    toast.success(t('batchTester.fillAllSuccess', { count: toolNames.length }));
+  };
+
   // Parse and count current tools in input
   const getCurrentToolCount = (): number => {
     try {
@@ -172,7 +186,7 @@ export function BatchTester() {
 
   const currentToolCount = getCurrentToolCount();
 
-  const runBatchTest = async () => {
+  const runBatchTest = useCallback(async () => {
     if (!activeServerId) {
       toast.error(t('batchTester.noServer'));
       return;
@@ -180,6 +194,11 @@ export function BatchTester() {
 
     const toolNames = parseToolNames(toolNamesInput);
     if (!toolNames || toolNames.length === 0) return;
+
+    // Reset flags
+    cancelledRef.current = false;
+    pausedRef.current = false;
+    setIsPaused(false);
 
     setProgress({
       total: toolNames.length,
@@ -192,7 +211,31 @@ export function BatchTester() {
 
     const results: BatchTestResult[] = [];
 
+    // Helper to wait if paused
+    const waitIfPaused = async () => {
+      if (pausedRef.current) {
+        await new Promise<void>((resolve) => {
+          pauseResolveRef.current = resolve;
+        });
+      }
+    };
+
     for (let i = 0; i < toolNames.length; i++) {
+      // Check if cancelled
+      if (cancelledRef.current) {
+        toast.info(t('batchTester.cancelled'));
+        break;
+      }
+
+      // Wait if paused
+      await waitIfPaused();
+
+      // Check again after resume in case cancelled while paused
+      if (cancelledRef.current) {
+        toast.info(t('batchTester.cancelled'));
+        break;
+      }
+
       const toolName = toolNames[i];
       const timestamp = new Date().toISOString();
       try {
@@ -240,20 +283,50 @@ export function BatchTester() {
       }
 
       // Add delay between calls (except after the last one)
-      if (i < toolNames.length - 1 && delayMs > 0) {
+      if (i < toolNames.length - 1 && delayMs > 0 && !cancelledRef.current) {
         await new Promise(resolve => setTimeout(resolve, delayMs));
       }
     }
 
     setProgress((prev) => ({ ...prev, isRunning: false }));
-    toast.success(
-      t('batchTester.completed', {
-        total: toolNames.length,
-        succeeded: results.filter((r) => r.success).length,
-        failed: results.filter((r) => !r.success).length,
-      })
-    );
-  };
+
+    if (!cancelledRef.current) {
+      toast.success(
+        t('batchTester.completed', {
+          total: toolNames.length,
+          succeeded: results.filter((r) => r.success).length,
+          failed: results.filter((r) => !r.success).length,
+        })
+      );
+    }
+  }, [activeServerId, toolNamesInput, delayMs, callTool, t]);
+
+  const cancelBatchTest = useCallback(() => {
+    cancelledRef.current = true;
+    // If paused, resume to allow the loop to exit
+    if (pausedRef.current && pauseResolveRef.current) {
+      pausedRef.current = false;
+      setIsPaused(false);
+      pauseResolveRef.current();
+      pauseResolveRef.current = null;
+    }
+  }, []);
+
+  const pauseBatchTest = useCallback(() => {
+    pausedRef.current = true;
+    setIsPaused(true);
+    toast.info(t('batchTester.paused'));
+  }, [t]);
+
+  const resumeBatchTest = useCallback(() => {
+    pausedRef.current = false;
+    setIsPaused(false);
+    if (pauseResolveRef.current) {
+      pauseResolveRef.current();
+      pauseResolveRef.current = null;
+    }
+    toast.info(t('batchTester.resumed'));
+  }, [t]);
 
   const exportToCsv = async () => {
     if (progress.results.length === 0) {
@@ -389,7 +462,7 @@ export function BatchTester() {
                   className="font-mono text-xs h-[200px] resize-none"
                   disabled={progress.isRunning}
                 />
-                <div className="flex items-start gap-2">
+                <div className="flex items-start gap-2 flex-wrap">
                   <Button
                     variant="outline"
                     size="sm"
@@ -400,8 +473,32 @@ export function BatchTester() {
                     <CheckCheck className="h-3.5 w-3.5 mr-1.5" />
                     {t('batchTester.format')}
                   </Button>
-                  <p className="text-xs text-muted-foreground leading-relaxed pt-1.5">
-                    {t('batchTester.formatHint')}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={fillAllTools}
+                    disabled={progress.isRunning || !activeServerId || isLoadingTools || !tools || tools.length === 0}
+                    className="shrink-0"
+                  >
+                    {isLoadingTools ? (
+                      <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                    ) : (
+                      <ListPlus className="h-3.5 w-3.5 mr-1.5" />
+                    )}
+                    {t('batchTester.fillAll')}
+                    {tools && tools.length > 0 && (
+                      <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px]">
+                        {tools.length}
+                      </Badge>
+                    )}
+                  </Button>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <span className="font-medium">{t('batchTester.format')}:</span> {t('batchTester.formatHint')}
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <span className="font-medium">{t('batchTester.fillAll')}:</span> {t('batchTester.fillAllHint')}
                   </p>
                 </div>
               </div>
@@ -425,23 +522,45 @@ export function BatchTester() {
               </div>
 
               <div className="flex gap-2">
-                <Button
-                  onClick={runBatchTest}
-                  disabled={progress.isRunning || !activeServerId}
-                  className="flex-1"
-                >
-                  {progress.isRunning ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      {t('batchTester.running')}
-                    </>
-                  ) : (
-                    <>
-                      <Play className="h-4 w-4 mr-2" />
-                      {t('batchTester.start')}
-                    </>
-                  )}
-                </Button>
+                {progress.isRunning ? (
+                  <>
+                    {isPaused ? (
+                      <Button
+                        onClick={resumeBatchTest}
+                        variant="default"
+                        className="flex-1"
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        {t('batchTester.resume')}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={pauseBatchTest}
+                        variant="secondary"
+                        className="flex-1"
+                      >
+                        <Pause className="h-4 w-4 mr-2" />
+                        {t('batchTester.pause')}
+                      </Button>
+                    )}
+                    <Button
+                      onClick={cancelBatchTest}
+                      variant="destructive"
+                    >
+                      <StopCircle className="h-4 w-4 mr-2" />
+                      {t('batchTester.cancel')}
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    onClick={runBatchTest}
+                    disabled={!activeServerId}
+                    className="flex-1"
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    {t('batchTester.start')}
+                  </Button>
+                )}
 
                 <Button
                   variant="outline"
@@ -502,12 +621,49 @@ export function BatchTester() {
         {/* Results Section */}
         <Card className="flex flex-col min-h-0">
           <CardHeader className="border-b border-border/40 shrink-0">
-            <CardTitle>{t('batchTester.resultsTitle')}</CardTitle>
-            <CardDescription>
-              {progress.results.length > 0
-                ? t('batchTester.resultsCount', { count: progress.results.length })
-                : t('batchTester.noResults')}
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>{t('batchTester.resultsTitle')}</CardTitle>
+                <CardDescription>
+                  {progress.results.length > 0
+                    ? resultFilter === 'all'
+                      ? t('batchTester.resultsCount', { count: progress.results.length })
+                      : t('batchTester.filteredResultsCount', { filtered: filteredResults.length, total: progress.results.length })
+                    : t('batchTester.noResults')}
+                </CardDescription>
+              </div>
+              {progress.results.length > 0 && (
+                <div className="flex items-center gap-1">
+                  <Filter className="h-3.5 w-3.5 text-muted-foreground mr-1" />
+                  <Button
+                    variant={resultFilter === 'all' ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => setResultFilter('all')}
+                  >
+                    {t('batchTester.filterAll')}
+                  </Button>
+                  <Button
+                    variant={resultFilter === 'success' ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => setResultFilter('success')}
+                  >
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    {progress.succeeded}
+                  </Button>
+                  <Button
+                    variant={resultFilter === 'failed' ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => setResultFilter('failed')}
+                  >
+                    <XCircle className="h-3 w-3 mr-1" />
+                    {progress.failed}
+                  </Button>
+                </div>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="flex-1 overflow-hidden p-0 pt-4">
             <ScrollArea className="h-full px-6 pb-6">
@@ -516,9 +672,14 @@ export function BatchTester() {
                   <TestTube className="h-12 w-12 mb-3 opacity-20" />
                   <p className="text-sm">{t('batchTester.runTestsHint')}</p>
                 </div>
+              ) : filteredResults.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
+                  <Filter className="h-12 w-12 mb-3 opacity-20" />
+                  <p className="text-sm">{t('batchTester.noFilteredResults')}</p>
+                </div>
               ) : (
                 <div className="space-y-3 pt-2">
-                  {progress.results.map((result, index) => (
+                  {filteredResults.map((result, index) => (
                     <div
                       key={index}
                       className="p-4 rounded-lg border border-border bg-card hover:bg-accent/50 hover:border-border/60 transition-colors"

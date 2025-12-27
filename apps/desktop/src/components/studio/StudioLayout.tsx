@@ -10,7 +10,7 @@ export function StudioLayout() {
   return (
     <ResizablePanelGroup direction="horizontal" className="h-screen items-stretch">
       {/* Server Dock */}
-      <ResizablePanel defaultSize={7} minSize={6} maxSize={10} className="bg-muted/30 min-w-[70px]">
+      <ResizablePanel defaultSize={5} minSize={4} maxSize={8} className="bg-muted/30 min-w-[56px]">
         <ServerDock />
       </ResizablePanel>
 

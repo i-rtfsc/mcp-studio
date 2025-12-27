@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cn } from '@/lib/utils';
+import { cn, truncateBase64InObject } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -32,32 +32,6 @@ interface ToolDetailProps {
   tool: McpTool;
   onBack: () => void;
 }
-
-// Helper to truncate base64 data for display
-const truncateBase64InObject = (obj: any): any => {
-  if (!obj) return obj;
-  if (typeof obj !== 'object') return obj;
-
-  if (Array.isArray(obj)) {
-    return obj.map(truncateBase64InObject);
-  }
-
-  const newObj = { ...obj };
-
-  // Check if this object looks like an image content block
-  if (newObj.type === 'image' && typeof newObj.data === 'string' && newObj.data.length > 100) {
-    newObj.data = `... (${Math.round(newObj.data.length / 1024)} KB base64 data) ...`;
-  } else {
-    // Recursively process other fields
-    for (const key in newObj) {
-      if (Object.prototype.hasOwnProperty.call(newObj, key)) {
-        newObj[key] = truncateBase64InObject(newObj[key]);
-      }
-    }
-  }
-
-  return newObj;
-};
 
 interface DisplayCardProps {
   title: string;
@@ -162,10 +136,21 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
       }
     }
 
+    // Safely parse output_result
+    let parsedResult = null;
+    if (item.output_result) {
+      try {
+        parsedResult = JSON.parse(item.output_result);
+      } catch {
+        // If parsing fails, use raw string
+        parsedResult = item.output_result;
+      }
+    }
+
     setResult({
       success: item.status === 'success',
       raw_response: item.output_result || '',
-      result: item.output_result ? JSON.parse(item.output_result) : null,
+      result: parsedResult,
       error: item.error_message,
       duration_ms: item.duration_ms || 0,
       created_at: item.created_at,
@@ -177,7 +162,12 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
   // Pre-fill default values based on schema or saved history
   useEffect(() => {
     const storageKey = activeServerId ? `mcp_tool_params_${activeServerId}_${tool.name}` : null;
-    const savedParams = storageKey ? localStorage.getItem(storageKey) : null;
+    let savedParams: string | null = null;
+    try {
+      savedParams = storageKey ? localStorage.getItem(storageKey) : null;
+    } catch {
+      // localStorage not available
+    }
 
     if (savedParams) {
       setInputParams(savedParams);
@@ -232,7 +222,11 @@ export function ToolDetail({ tool, onBack }: ToolDetailProps) {
     if (!activeServerId) return;
 
     // Save params to local storage for future use
-    localStorage.setItem(`mcp_tool_params_${activeServerId}_${tool.name}`, inputParams);
+    try {
+      localStorage.setItem(`mcp_tool_params_${activeServerId}_${tool.name}`, inputParams);
+    } catch {
+      // localStorage not available
+    }
 
     let params: Record<string, unknown> = {};
     if (inputParams.trim()) {

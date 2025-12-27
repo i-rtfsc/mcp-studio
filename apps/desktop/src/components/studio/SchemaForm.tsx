@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -12,6 +13,22 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 
+// JSON Schema types
+interface JSONSchemaProperty {
+  type?: string;
+  description?: string;
+  default?: unknown;
+  enum?: unknown[];
+  anyOf?: JSONSchemaProperty[];
+  oneOf?: JSONSchemaProperty[];
+}
+
+interface JSONSchema {
+  type?: string;
+  properties?: Record<string, JSONSchemaProperty>;
+  required?: string[];
+}
+
 interface SchemaFormProps {
   schema: string | null;
   value: string; // JSON string
@@ -19,8 +36,12 @@ interface SchemaFormProps {
 }
 
 export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
-  const [parsedSchema, setParsedSchema] = useState<any>(null);
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const { t } = useTranslation();
+  const [parsedSchema, setParsedSchema] = useState<JSONSchema | null>(null);
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
+  // Track local string state for complex fields (to allow invalid JSON while typing)
+  const [complexFieldStrings, setComplexFieldStrings] = useState<Record<string, string>>({});
+  const [complexFieldErrors, setComplexFieldErrors] = useState<Record<string, boolean>>({});
 
   // Parse schema and initial value
   useEffect(() => {
@@ -42,16 +63,29 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
     }
   }, [value]);
 
-  const handleFieldChange = (key: string, fieldValue: any) => {
+  const handleFieldChange = (key: string, fieldValue: unknown) => {
     const newFormData = { ...formData, [key]: fieldValue };
     setFormData(newFormData);
     onChange(JSON.stringify(newFormData, null, 2));
   };
 
+  // Handle complex field (array/object) string changes
+  const handleComplexFieldChange = (key: string, stringValue: string) => {
+    setComplexFieldStrings((prev) => ({ ...prev, [key]: stringValue }));
+    try {
+      const parsed = JSON.parse(stringValue);
+      setComplexFieldErrors((prev) => ({ ...prev, [key]: false }));
+      handleFieldChange(key, parsed);
+    } catch {
+      setComplexFieldErrors((prev) => ({ ...prev, [key]: true }));
+      // Don't update formData if invalid JSON
+    }
+  };
+
   if (!parsedSchema || !parsedSchema.properties) {
     return (
       <div className="text-sm text-muted-foreground p-4 bg-muted/30 rounded-lg border border-dashed">
-        No parameters required for this tool.
+        {t('schemaForm.noParameters')}
       </div>
     );
   }
@@ -76,8 +110,8 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
         let type = prop.type;
         // Handle anyOf/oneOf if type is missing (simple heuristic)
         if (!type && (prop.anyOf || prop.oneOf)) {
-          const variants = prop.anyOf || prop.oneOf;
-          const nonNull = variants.find((v: any) => v.type !== 'null');
+          const variants = prop.anyOf ?? prop.oneOf ?? [];
+          const nonNull = variants.find((v) => v.type !== 'null');
           if (nonNull) type = nonNull.type;
         }
 
@@ -143,7 +177,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
               <Input
                 type="number"
                 placeholder={String(prop.default || '')}
-                value={formData[key] ?? ''}
+                value={formData[key] !== undefined ? String(formData[key]) : ''}
                 onChange={(e) => {
                   const val = e.target.value;
                   handleFieldChange(key, val === '' ? undefined : Number(val));
@@ -161,7 +195,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
               {label}
               <Input
                 placeholder={String(prop.default || '')}
-                value={formData[key] ?? ''}
+                value={(formData[key] as string) ?? ''}
                 onChange={(e) => handleFieldChange(key, e.target.value)}
               />
               {description}
@@ -169,29 +203,31 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
           );
         }
 
-        // Fallback for arrays/objects: Textarea
+        // Fallback for arrays/objects: Textarea with error feedback
+        const complexValue =
+          complexFieldStrings[key] ??
+          (typeof formData[key] === 'object'
+            ? JSON.stringify(formData[key], null, 2)
+            : String(formData[key] ?? ''));
+        const hasError = complexFieldErrors[key];
+
         return (
           <div key={key} className="space-y-1">
             {label}
             <Textarea
-              className="font-mono text-xs h-20"
+              className={cn(
+                'font-mono text-xs h-20',
+                hasError && 'border-red-500 focus-visible:ring-red-500'
+              )}
               placeholder="{ ... }"
-              value={
-                typeof formData[key] === 'object'
-                  ? JSON.stringify(formData[key], null, 2)
-                  : (formData[key] ?? '')
-              }
-              onChange={(e) => {
-                try {
-                  const parsed = JSON.parse(e.target.value);
-                  handleFieldChange(key, parsed);
-                } catch {
-                  // Just update the string if invalid JSON (won't save correctly to object though, logic limitation for MVP)
-                  // Ideally we keep a local string state for this field
-                }
-              }}
+              value={complexValue}
+              onChange={(e) => handleComplexFieldChange(key, e.target.value)}
             />
-            <p className="text-[10px] text-yellow-500/80">Complex type: enter valid JSON</p>
+            {hasError ? (
+              <p className="text-[10px] text-red-500">{t('schemaForm.invalidJson')}</p>
+            ) : (
+              <p className="text-[10px] text-muted-foreground">{t('schemaForm.complexTypeHint')}</p>
+            )}
             {description}
           </div>
         );

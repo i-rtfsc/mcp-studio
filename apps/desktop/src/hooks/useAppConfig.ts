@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -20,7 +21,11 @@ export function useAppConfig() {
     },
   });
 
-  const getSetting = (key: string) => settings?.[key];
+  // Stable reference using useCallback
+  const getSetting = useCallback(
+    (key: string) => settings?.[key],
+    [settings]
+  );
 
   return {
     settings,

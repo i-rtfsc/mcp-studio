@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/lib/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -199,6 +199,16 @@ export function WebhookPanel() {
   const { isInspectorOpen } = useAppStore();
   const [port, setPort] = useState(9527);
   const [previewImage, setPreviewImage] = useState<{ url: string; name: string } | null>(null);
+
+  // Cleanup ObjectURL when preview image changes or component unmounts
+  useEffect(() => {
+    return () => {
+      if (previewImage?.url) {
+        URL.revokeObjectURL(previewImage.url);
+      }
+    };
+  }, [previewImage]);
+
   const [isAndroidConfigOpen, setIsAndroidConfigOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
@@ -255,17 +265,21 @@ export function WebhookPanel() {
     }
   };
 
-  const handlePreviewImage = async (filePath: string, fileName: string) => {
+  const handlePreviewImage = useCallback(async (filePath: string, fileName: string) => {
     try {
+      // Revoke previous URL before creating new one
+      if (previewImage?.url) {
+        URL.revokeObjectURL(previewImage.url);
+      }
       const content = await readFile(filePath);
       const blob = new Blob([content]);
       const url = URL.createObjectURL(blob);
       setPreviewImage({ url, name: fileName });
     } catch (error) {
       console.error('Failed to read file', error);
-      toast.error('Failed to preview image: ' + String(error));
+      toast.error(t('http.receiver.previewError', { error: String(error) }));
     }
-  };
+  }, [previewImage, t]);
 
   const prettifyJson = (raw: string) => {
     try {
@@ -293,10 +307,19 @@ export function WebhookPanel() {
               style={{ maxHeight: '400px' }}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
+                // Store old src to revoke later if it was an ObjectURL
+                const oldSrc = target.src;
                 readFile(msg.file_path!)
                   .then((content) => {
                     const blob = new Blob([content]);
-                    target.src = URL.createObjectURL(blob);
+                    const newUrl = URL.createObjectURL(blob);
+                    target.src = newUrl;
+                    // Store the ObjectURL on the element for cleanup
+                    target.dataset.objectUrl = newUrl;
+                    // Revoke old ObjectURL if exists
+                    if (oldSrc.startsWith('blob:')) {
+                      URL.revokeObjectURL(oldSrc);
+                    }
                   })
                   .catch(console.error);
               }}
@@ -316,7 +339,7 @@ export function WebhookPanel() {
               className="h-6 w-6"
               onClick={() => {
                 navigator.clipboard.writeText(msg.file_path!);
-                toast.success('Path copied');
+                toast.success(t('http.receiver.pathCopied'));
               }}
             >
               <Copy className="h-3.5 w-3.5" />

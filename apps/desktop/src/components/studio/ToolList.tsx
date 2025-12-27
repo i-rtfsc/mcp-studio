@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useMcpTools } from '@/hooks/useMcpTools';
+import { useMcpTools, type McpTool } from '@/hooks/useMcpTools';
 import { useAppStore } from '@/lib/store';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,48 @@ import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
 import { cn } from '@/lib/utils';
 
+// Helper to extract searchable tags from a tool
+function getToolTags(tool: McpTool): string[] {
+  const tags: string[] = [];
+
+  // Add "output_schema" tag if present
+  if (tool.output_schema) {
+    tags.push('output_schema');
+    tags.push('complex');
+    tags.push('复杂'); // Chinese tag for complex data type
+  }
+
+  // Parse extra for agents and other metadata
+  if (tool.extra) {
+    try {
+      const extra = JSON.parse(tool.extra);
+
+      // Add allowed agents
+      const agents = extra._meta?.allowedAgents;
+      if (Array.isArray(agents)) {
+        agents.forEach((agent: string) => {
+          tags.push(agent.toLowerCase());
+        });
+      }
+
+      // Add any other annotations as tags
+      if (extra.annotations) {
+        Object.keys(extra.annotations).forEach((key) => {
+          tags.push(key.toLowerCase());
+          const value = extra.annotations[key];
+          if (typeof value === 'string') {
+            tags.push(value.toLowerCase());
+          }
+        });
+      }
+    } catch {
+      // Ignore JSON parse errors
+    }
+  }
+
+  return tags;
+}
+
 function ToolListSkeleton() {
   return (
     <div className="space-y-3">
@@ -47,18 +89,73 @@ function ToolListSkeleton() {
 
 export function ToolList() {
   const { t } = useTranslation();
-  const { activeServerId, setSelectedTool, selectedTool } = useAppStore();
+  const {
+    activeServerId,
+    setSelectedTool,
+    selectedTool,
+    toolListSearch,
+    setToolListSearch,
+    toolListScrollPosition,
+    setToolListScrollPosition,
+  } = useAppStore();
   const { tools, isLoading, error, refreshTools } = useMcpTools(activeServerId);
-  const [search, setSearch] = useState('');
+
+  // Get search from store (per server)
+  const search = activeServerId ? (toolListSearch[activeServerId] ?? '') : '';
+  const setSearch = useCallback(
+    (value: string) => {
+      if (activeServerId) {
+        setToolListSearch(activeServerId, value);
+      }
+    },
+    [activeServerId, setToolListSearch]
+  );
+
   const [showJsonDialog, setShowJsonDialog] = useState(false);
   const [rawJsonContent, setRawJsonContent] = useState('');
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const filteredTools = tools?.filter(
-    (tool) =>
-      tool.name.toLowerCase().includes(search.toLowerCase()) ||
-      (tool.description && tool.description.toLowerCase().includes(search.toLowerCase()))
-  );
+  // Restore scroll position on mount
+  useEffect(() => {
+    if (activeServerId && parentRef.current) {
+      const savedPosition = toolListScrollPosition[activeServerId] ?? 0;
+      if (savedPosition > 0) {
+        // Use requestAnimationFrame to ensure the DOM is ready
+        requestAnimationFrame(() => {
+          if (parentRef.current) {
+            parentRef.current.scrollTop = savedPosition;
+          }
+        });
+      }
+    }
+  }, [activeServerId, toolListScrollPosition]);
+
+  // Save scroll position on scroll
+  const handleScroll = useCallback(() => {
+    if (activeServerId && parentRef.current) {
+      setToolListScrollPosition(activeServerId, parentRef.current.scrollTop);
+    }
+  }, [activeServerId, setToolListScrollPosition]);
+
+  const filteredTools = useMemo(() => {
+    if (!tools) return [];
+    const searchLower = search.toLowerCase().trim();
+    if (!searchLower) return tools;
+
+    return tools.filter((tool) => {
+      // Search in name
+      if (tool.name.toLowerCase().includes(searchLower)) return true;
+
+      // Search in description
+      if (tool.description && tool.description.toLowerCase().includes(searchLower)) return true;
+
+      // Search in tags (output_schema, agents, annotations)
+      const tags = getToolTags(tool);
+      if (tags.some((tag) => tag.includes(searchLower))) return true;
+
+      return false;
+    });
+  }, [tools, search]);
 
   // Virtual scrolling for large tool lists
   const virtualizer = useVirtualizer({
@@ -181,6 +278,7 @@ export function ToolList() {
         ref={parentRef}
         className="flex-1 overflow-y-auto"
         style={{ contain: 'strict' }}
+        onScroll={handleScroll}
       >
         <div className="p-4">
           {isLoading ? (

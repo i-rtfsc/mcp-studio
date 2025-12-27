@@ -37,8 +37,8 @@ export function ServerDock() {
       <div data-tauri-drag-region className="h-14 w-full shrink-0" />
 
       {/* Server List */}
-      <ScrollArea className="flex-1 w-full px-2" hideScrollBar>
-        <div className="flex flex-col gap-4 items-center py-4">
+      <ScrollArea className="flex-1 w-full px-1.5" hideScrollBar>
+        <div className="flex flex-col gap-3 items-center py-3">
           {servers?.map((server) => (
             <div key={server.id} className="relative group w-full flex justify-center">
               <Tooltip delayDuration={0}>
@@ -46,26 +46,26 @@ export function ServerDock() {
                   <button
                     onClick={() => setActiveServerId(server.id)}
                     className={cn(
-                      'relative flex h-11 w-11 items-center justify-center transition-all duration-300 group rounded-full',
+                      'relative flex h-10 w-10 items-center justify-center transition-all duration-300 group rounded-full',
                       activeServerId === server.id
                         ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105'
                         : 'bg-card hover:bg-card/80 text-muted-foreground hover:text-foreground border border-border/50 hover:border-primary/30 hover:shadow-md'
                     )}
                   >
                     {/* Initials / Icon */}
-                    <span className="text-xs font-bold leading-none select-none tracking-tight">
+                    <span className="text-[10px] font-bold leading-none select-none tracking-tight">
                       {getInitials(server.name)}
                     </span>
 
                     {/* Active Indicator Bar (Left) */}
                     {activeServerId === server.id && (
-                      <span className="absolute -left-3 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
+                      <span className="absolute -left-2.5 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-full shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
                     )}
 
                     {/* Status Dot (Top Right) */}
                     <span
                       className={cn(
-                        'absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full border-[2.5px] border-background flex items-center justify-center z-10 transition-colors duration-300',
+                        'absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background flex items-center justify-center z-10 transition-colors duration-300',
                         server.status === 'connected'
                           ? 'bg-green-500'
                           : server.status === 'error'
@@ -112,10 +112,10 @@ export function ServerDock() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-11 w-11 rounded-full hover:bg-green-500/10 hover:text-green-600 transition-all duration-300 border border-dashed border-border hover:border-green-500/50 hover:shadow-sm mt-2"
+                className="h-10 w-10 rounded-full hover:bg-green-500/10 hover:text-green-600 transition-all duration-300 border border-dashed border-border hover:border-green-500/50 hover:shadow-sm mt-1"
                 onClick={() => setIsAddDialogOpen(true)}
               >
-                <Plus className="h-5 w-5" />
+                <Plus className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right" className="ml-3">
@@ -126,17 +126,17 @@ export function ServerDock() {
       </ScrollArea>
 
       {/* Bottom Actions */}
-      <div className="mt-auto flex flex-col gap-4 items-center pb-6 px-2 w-full">
-        <Separator className="w-6 bg-border/60" />
+      <div className="mt-auto flex flex-col gap-3 items-center pb-4 px-1.5 w-full">
+        <Separator className="w-5 bg-border/60" />
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="h-9 w-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               onClick={() => setIsSettingsOpen(true)}
             >
-              <Settings className="h-5 w-5" />
+              <Settings className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right" className="ml-3">
